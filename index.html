@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Hiroshima 3D Evacuation Map</title>
+  <meta name="description" content="広島市中心部の 3D 都市モデル（PLATEAU）と DoboX の防災データで、浸水の深さと避難場所を 4 言語（やさしい日本語・English・中文・한국어）で示す Web アプリ。">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.146.0/Build/Cesium/Widgets/widgets.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/cesium@1.146.0/Build/Cesium/Cesium.js"></script>
+</head>
+<body>
+  <div id="viewer"></div>
+
+  <header id="topbar">
+    <div class="brand">
+      <h1 data-i18n="title"></h1>
+      <p data-i18n="subtitle"></p>
+    </div>
+    <label class="lang">
+      <span class="sr-only">Language</span>
+      <select id="lang-select" aria-label="Language"></select>
+    </label>
+  </header>
+
+  <nav id="controls">
+    <div class="row">
+      <button id="btn-locate" type="button" class="primary" data-i18n="myLocation"></button>
+      <select id="spot-select" aria-label="Place"></select>
+    </div>
+    <div class="row hazards" role="radiogroup" id="hazard-group" aria-label="Hazard"></div>
+    <details id="layer-panel">
+      <summary data-i18n="layers"></summary>
+      <div id="layer-list"></div>
+    </details>
+  </nav>
+
+  <section id="sheet" aria-live="polite">
+    <p id="hint" data-i18n="tapHint"></p>
+    <div id="result" hidden></div>
+    <footer>
+      <p class="disclaimer" data-i18n="disclaimer"></p>
+      <button id="btn-sources" type="button" class="link" data-i18n="sources"></button>
+    </footer>
+  </section>
+
+  <dialog id="sources-dialog">
+    <div id="sources-body"></div>
+    <form method="dialog"><button data-i18n="close"></button></form>
+  </dialog>
+
+  <div id="loading" data-i18n="loading"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
