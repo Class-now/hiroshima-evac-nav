@@ -420,10 +420,16 @@ function placeName(x) {
   if (lang === "ko" && x.name_ko) return x.name_ko;
   if (lang === "ja-easy" && x.name_kana) return `${x.name}（${x.name_kana}）`;
   if (lang !== "ja-easy" && x.name_en) return `${x.name_en}（${x.name}）`;
+  if (lang !== "ja-easy" && x.cat) return `${x.name}（${t("cat_" + x.cat)}）`;
   return x.name;
 }
 
 const routeEntities = [];
+function kindLabel(kind) {
+  if (kind === "both") return `${t("kindEmergency")} / ${t("kindShelter")}`;
+  return t(kind === "shelter" ? "kindShelter" : "kindEmergency");
+}
+
 function drawRoutes(sel, shelters) {
   for (const e of routeEntities.splice(0)) markers.remove(e);
   routeEntities.push(
@@ -516,7 +522,7 @@ async function render() {
         shelters
           .map(
             (s, i) =>
-              `<li><button type="button" data-shelter="${i}">${esc(placeName(s))}</button><br><span class="kind">${esc(t(s.kind === "shelter" ? "kindShelter" : "kindEmergency"))}</span> · ${esc(
+              `<li><button type="button" data-shelter="${i}">${esc(placeName(s))}</button><br><span class="kind">${esc(kindLabel(s.kind))}</span> · ${esc(
                 t("walk", { m: walkMin(s.d), km: (s.d / 1000).toFixed(2) })
               )}</li>`
           )
@@ -688,13 +694,15 @@ function translate() {
 const SOURCES_HTML = `
 <h2>Data / データ</h2>
 <ul>
-  <li>3D都市モデル（建築物・洪水/高潮/津波浸水想定区域）: 国土交通省 Project PLATEAU（広島市 2024年度）。<a href="https://www.mlit.go.jp/plateau/site-policy/" target="_blank">利用規約</a></li>
-  <li>避難場所・土砂災害警戒区域: 広島県 DoboX（<a href="https://hiroshima-dobox.jp/" target="_blank">hiroshima-dobox.jp</a>）。出典は data/README.md を参照</li>
-  <li>路面電車の停留所: 広島電鉄 GTFS-JP</li>
+  <li>3D都市モデル（建築物・洪水/高潮/津波浸水想定区域）: 国土交通省 Project PLATEAU（広島市 2024年度）。<a href="https://www.mlit.go.jp/plateau/site-policy/" target="_blank" rel="noopener">利用規約</a></li>
+  <li>避難所: 出典 広島県インフラマネジメント基盤（DoboX）／広島県 危機管理課「避難所情報」（CC BY 4.0、加工して作成）</li>
+  <li>指定緊急避難場所: 国土地理院「指定緊急避難場所データ」（広島市）を加工して作成</li>
+  <li>土砂災害警戒区域: 出典 広島県インフラマネジメント基盤（DoboX）／広島県 砂防課（CC BY 4.0、中・東・南・西区を加工して作成）</li>
+  <li>路面電車の停留場: 国土数値情報（鉄道データ N02、国土交通省、CC BY 4.0）。停留場名の英・中・韓訳: 広島電鉄 GTFS-JP（広島県バス協会、CC0）と作者による訳</li>
   <li>背景地図: 地理院タイル（淡色地図）</li>
   <li>3D 表示: CesiumJS（Apache-2.0）</li>
 </ul>
-<p>浸水深は想定最大規模（L2）の予測値。避難の判断は広島市の発表に従ってください。</p>`;
+<p>浸水深は想定最大規模（L2）の予測値。避難の判断は広島市の発表に従ってください。データの作成日は data/README.md を参照。</p>`;
 
 // ---- boot ------------------------------------------------------------------
 
