@@ -258,3 +258,4 @@ export function t(key, vars = {}) {
   if (typeof v !== "string") return v;
   return v.replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? ""));
 }
+export const STRINGS = S;
