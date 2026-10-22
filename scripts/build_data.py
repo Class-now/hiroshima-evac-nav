@@ -17,6 +17,7 @@ import json
 import math
 import re
 import struct
+import sys
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -80,15 +81,17 @@ CATEGORIES = [
     ("hall", r"(集会所|集会場)"),
     ("community", r"(公民館|コミュニティ|市民センター|交流センター|会館)"),
     ("library", r"図書館"),
+    ("sports", r"(体育館|スポーツ|運動場|グラウンド|グランド|スタジアム|球場|競輪場)"),
     ("culture", r"(文化センター|ホール|プラザ)"),
     ("park", r"(公園|広場|緑地|城跡|縮景園)"),
-    ("sports", r"(体育館|スポーツ|運動場|グラウンド|グランド|スタジアム|球場|競輪場)"),
     ("welfare", r"(福祉|老人|ケア)"),
 ]
 
 
 def category(name):
-    return next((k for k, rx in CATEGORIES if re.search(rx, name)), None)
+    # 括弧の中（命名権の名前など）は見ない。「コジマホールディングス」が ホール に当たらないように。
+    main = re.split(r"[（(]", name)[0]
+    return next((k for k, rx in CATEGORIES if re.search(rx, main)), None)
 
 
 def norm(name):
@@ -325,6 +328,11 @@ def main():
     build_shelters(a.raw)
     build_stops(a.raw)
     build_landslide(a.raw)
+    # 避難場所名の英中韓（scripts/build_shelter_names.py）。-I ではスクリプトのフォルダが sys.path に無いので足す。
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import build_shelter_names
+
+    build_shelter_names.main()
 
 
 if __name__ == "__main__":

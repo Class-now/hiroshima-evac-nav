@@ -1,0 +1,11 @@
+{
+  "name": "hiroshima-evac-nav",
+  "private": true,
+  "type": "module",
+  "description": "広島 3D 多言語避難ナビ（静的サイト。ビルドなし）",
+  "scripts": {
+    "test": "node --test \"test/**/*.test.mjs\"",
+    "smoke": "node scripts/smoke.mjs",
+    "serve": "python3 -m http.server 8000"
+  }
+}
