@@ -11,7 +11,9 @@
 | [plateau-slides.md](plateau-slides.md) | スライド構成案 11 枚と、審査基準 5 項目への対応表 | PLATEAU AWARD 2026 |
 | [demo-storyboard.md](demo-storyboard.md) | 3 分デモ動画の絵コンテ（12 カット・180 秒、日英字幕）、撮影前チェックリスト、撮影手順 | PLATEAU AWARD 2026（他でも流用可） |
 | [dobox-poster.md](dobox-poster.md) | A4 縦ポスターの割付図・本文案、DoboX 使用データ一覧と出典表記 | DoboX データチャレンジ 2026 |
-| [udc-summary.md](udc-summary.md) | 100 字概要 3 案（文字数つき）と狙い | アーバンデータチャレンジ 2026 |
+| [udc-summary.md](udc-summary.md) | 100 字概要 3 案と最終案（文字数つき） | アーバンデータチャレンジ 2026 |
+| [out/](out/README.md) | **成果物の初版**: スライド PDF・デモ動画 mp4（＋字幕 .srt）・ポスター PDF・スクリーンショット。作り直し方も | 全部 |
+| [src/](src/) | スライド・ポスターの HTML ソース（`npm run pitch:pdf` で PDF に） | PLATEAU AWARD・DoboX |
 
 ## 締切・提出物
 

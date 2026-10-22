@@ -293,12 +293,12 @@ async function recordCut(browser, base, cut) {
 
 // ---- カード（タイトル・エンド） ----------------------------------------------------
 
-function cardHtml(kind, bg) {
+function cardHtml(kind, bg, qr) {
   const bgCss = bg ? `background:#0b2540 url('${bg}') center/cover` : "background:#0b2540";
   const common = `
     <style>
-      body{margin:0;width:${W}px;height:${H}px;font-family:"IPAGothic","WenQuanYi Zen Hei",sans-serif;color:#fff;overflow:hidden}
-      .bg{position:absolute;inset:0;${bgCss};filter:brightness(.55)}
+      body{margin:0;width:${W}px;height:${H}px;font-family:"IPAPGothic","IPAGothic","WenQuanYi Zen Hei",sans-serif;color:#fff;overflow:hidden}
+      .bg{position:absolute;inset:0;${bgCss};filter:brightness(.28) blur(1px)}
       .c{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 90px}
       h1{font-size:64px;margin:0 0 14px;letter-spacing:.02em}
       h2{font-size:28px;margin:0 0 30px;font-weight:normal;opacity:.9}
@@ -313,17 +313,19 @@ function cardHtml(kind, bg) {
   return `${common}<div class="bg"></div><div class="c">
     <h1 style="font-size:46px">これは予測です。<br>避難は広島市の情報に従ってください。</h1>
     <h2>These are estimates. Follow Hiroshima City's instructions.</h2>
-    <p class="url">${URL_PUBLIC}</p>
+    <p><span class="url">${URL_PUBLIC}</span>${qr ? `<img src="${qr}" style="width:150px;vertical-align:middle;margin-left:24px;background:#fff;padding:6px;border-radius:6px">` : ""}</p>
     <p style="font-size:18px;opacity:.85;margin-top:24px">3D 都市モデル: 国土交通省 Project PLATEAU ／ 出典: 広島県インフラマネジメント基盤（DoboX）CC BY 4.0 ／ 国土地理院 ／ 国土数値情報</p></div>`;
 }
 
 async function renderCards(browser) {
   const bgFile = path.join(OUT, "screens", "overview.png");
   const bg = fs.existsSync(bgFile) ? "data:image/png;base64," + fs.readFileSync(bgFile).toString("base64") : "";
+  const qrFile = path.join(ROOT, "docs", "pitch", "src", "img", "qr.svg");
+  const qr = fs.existsSync(qrFile) ? "data:image/svg+xml;base64," + fs.readFileSync(qrFile).toString("base64") : "";
   const ctx = await browser.newContext({ viewport: { width: W, height: H } });
   const page = await ctx.newPage();
   for (const kind of ["title", "end"]) {
-    await page.setContent(cardHtml(kind, bg));
+    await page.setContent(cardHtml(kind, bg, qr));
     await page.waitForTimeout(300);
     await page.screenshot({ path: path.join(WORK, `card-${kind}.png`) });
   }
@@ -364,8 +366,8 @@ WrapStyle: 0
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Sub,IPAGothic,34,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,2,40,40,22,1
-Style: Draft,IPAGothic,18,&H00FFFFFF,&H00FFFFFF,&H00000000,&HA0000000,0,0,0,0,100,100,0,0,3,4,0,9,12,12,72,1
+Style: Sub,IPAPGothic,34,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,2,40,40,22,1
+Style: Draft,IPAPGothic,17,&H00FFFFFF,&H00FFFFFF,&H00000000,&HA0000000,0,0,0,0,100,100,0,0,3,4,0,7,12,12,64,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
