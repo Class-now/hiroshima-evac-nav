@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Hiroshima 3D Evacuation Map</title>
   <meta name="description" content="広島市中心部の 3D 都市モデル（PLATEAU）と DoboX の防災データで、浸水の深さと避難場所を 4 言語（やさしい日本語・English・中文・한국어）で示す Web アプリ。">
+  <meta name="theme-color" content="#0b5cad">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.146.0/Build/Cesium/Widgets/widgets.css">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/cesium@1.146.0/Build/Cesium/Cesium.js"></script>
@@ -17,21 +18,28 @@
       <h1 data-i18n="title"></h1>
       <p data-i18n="subtitle"></p>
     </div>
-    <label class="lang">
-      <span class="sr-only">Language</span>
-      <select id="lang-select" aria-label="Language"></select>
-    </label>
+    <div class="top-actions">
+      <button id="btn-help" type="button" class="icon" data-i18n-aria="help" aria-haspopup="dialog">?</button>
+      <label class="lang">
+        <span class="sr-only">Language</span>
+        <select id="lang-select" aria-label="Language"></select>
+      </label>
+    </div>
   </header>
 
   <nav id="controls">
     <div class="row">
-      <button id="btn-locate" type="button" class="primary" data-i18n="myLocation"></button>
+      <button id="btn-near" type="button" class="primary" data-i18n="nearMe"></button>
       <select id="spot-select" aria-label="Place"></select>
     </div>
     <div class="row hazards" role="radiogroup" id="hazard-group" aria-label="Hazard"></div>
     <details id="layer-panel">
       <summary data-i18n="layers"></summary>
       <div id="layer-list"></div>
+    </details>
+    <details id="legend-panel">
+      <summary data-i18n="legend"></summary>
+      <div id="legend"></div>
     </details>
   </nav>
 
@@ -49,7 +57,23 @@
     <form method="dialog"><button data-i18n="close"></button></form>
   </dialog>
 
-  <div id="loading" data-i18n="loading"></div>
+  <dialog id="onboarding" aria-labelledby="onb-title">
+    <h2 id="onb-title" data-i18n="onbTitle"></h2>
+    <label class="lang onb-lang">
+      <span class="sr-only">Language</span>
+      <select id="onb-lang" aria-label="Language"></select>
+    </label>
+    <ol class="onb-steps">
+      <li data-i18n="onb1"></li>
+      <li data-i18n="onb2"></li>
+      <li data-i18n="onb3"></li>
+    </ol>
+    <p class="note" data-i18n="onb4"></p>
+    <form method="dialog"><button class="primary" data-i18n="onbStart"></button></form>
+  </dialog>
+
+  <div id="loading" role="status"><span class="spinner" aria-hidden="true"></span><span id="loading-text" data-i18n="loading"></span></div>
+  <div id="toast" role="alert" hidden></div>
 
   <script type="module" src="js/app.js"></script>
 </body>

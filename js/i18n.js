@@ -1,6 +1,6 @@
 // UI strings. Keys are shared across languages; {n} style placeholders are filled by t().
 // Languages: やさしい日本語 / English / 简体中文 / 한국어.
-// 訳語は監修前の案。本人（外国語専攻）が確認する（docs/translation-review.md）。
+// 訳語は監修前の案。本人（外国語専攻）が確認する（docs/translation-review-shelters.md と contest-pm 側の translation-review.md）。
 
 export const LANGS = [
   { code: "ja-easy", label: "やさしい にほんご", htmlLang: "ja" },
@@ -11,6 +11,10 @@ export const LANGS = [
 
 const S = {
   "ja-easy": {
+    landslideNone: "どしゃくずれに ちゅういする ばしょ では ありません",
+    depthUnknown: "わかりません（データを よみこめません でした）。たてものを タップして ください",
+    outsideCenter: "ひろしましの まんなかの そとに います。ちずの まんなかから さがします",
+    hazardLoadFailed: "この さいがいの データを よみこめません でした",
     cat_elementary: "しょうがっこう",
     cat_juniorhigh: "ちゅうがっこう",
     cat_highschool: "こうこう",
@@ -124,6 +128,10 @@ const S = {
     kindShelter: "とまれる ひなんじょ",
   },
   en: {
+    landslideNone: "Not in a landslide warning zone",
+    depthUnknown: "Unknown (data not loaded). Try tapping a building",
+    outsideCenter: "You are outside central Hiroshima. Searching from the map center",
+    hazardLoadFailed: "Could not load the data for this hazard",
     dir_N: "north",
     dir_NE: "northeast",
     dir_E: "east",
@@ -237,6 +245,10 @@ const S = {
     kindShelter: "Evacuation shelter (stay overnight)",
   },
   zh: {
+    landslideNone: "不在山体滑坡警戒区内",
+    depthUnknown: "不明（数据未能加载）。请点击建筑物",
+    outsideCenter: "您不在广岛市中心。改为从地图中心搜索",
+    hazardLoadFailed: "无法加载此灾害的数据",
     dir_N: "北",
     dir_NE: "东北",
     dir_E: "东",
@@ -350,6 +362,10 @@ const S = {
     kindShelter: "避难所（可过夜）",
   },
   ko: {
+    landslideNone: "토사 재해 경계 구역이 아닙니다",
+    depthUnknown: "알 수 없음 (데이터를 불러오지 못했습니다). 건물을 눌러 보세요",
+    outsideCenter: "히로시마시 중심부 밖에 있습니다. 지도 중심에서 찾습니다",
+    hazardLoadFailed: "이 재해의 데이터를 불러오지 못했습니다",
     dir_N: "북쪽",
     dir_NE: "북동쪽",
     dir_E: "동쪽",

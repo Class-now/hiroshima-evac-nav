@@ -175,12 +175,18 @@ function bump(obj, url) {
   obj[host] = (obj[host] || 0) + 1;
 }
 
-async function newContext(browser, base, { mobile = false, onboarded = true } = {}) {
-  const ctx = await browser.newContext(
-    mobile
+async function newContext(browser, base, { mobile = false, onboarded = true, geolocation = null, riverFixture = false } = {}) {
+  const ctx = await browser.newContext({
+    ...(mobile
       ? { viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 }
-      : { viewport: { width: 1280, height: 800 } }
-  );
+      : { viewport: { width: 1280, height: 800 } }),
+    ...(geolocation ? { geolocation, permissions: ["geolocation"] } : {}),
+  });
+  if (riverFixture) {
+    // 架空の観測所（test/fixtures/river_sample.json）で河川水位の画面だけを確かめる。
+    const body = fs.readFileSync(path.join(ROOT, "test", "fixtures", "river_sample.json"));
+    await ctx.route(/\/data\/river\.json$/, (route) => route.fulfill({ status: 200, contentType: "application/json", body }));
+  }
   if (onboarded) {
     await ctx.addInitScript(() => {
       try {
@@ -430,6 +436,80 @@ async function main() {
       await shot(page, run);
     },
     { mobile: true }
+  );
+
+  // 現在地: 許可なし → 地図の中心から / 許可あり（平和記念公園）→ 現在地から
+  for (const [name, geo, want] of [
+    ["near-denied", null, "From the map center"],
+    ["near-granted", { latitude: 34.3925, longitude: 132.4521 }, "From your location"],
+  ]) {
+    await scenario(
+      browser,
+      base,
+      name,
+      async (page, run) => {
+        await page.goto(`${base}?lang=en`, { waitUntil: "domcontentloaded" });
+        await waitLoaded(page, run);
+        await page.click("#btn-near");
+        await page.waitForFunction((w) => (document.querySelector("#result")?.textContent || "").includes(w), want, { timeout: 40000 }).catch(() => {});
+        const txt = (await page.textContent("#result")) || "";
+        run.check(txt.includes(want), `#result does not say "${want}"`);
+        const li = await page.$$eval("#result ol.shelters li", (x) => x.length);
+        run.check(li === 3, `expected 3 shelters, got ${li}`);
+        const dir = await page.$$eval("#result .dir", (x) => x.map((e) => e.textContent.trim()));
+        run.note(dir[0] || "no direction");
+        await shot(page, run);
+      },
+      { geolocation: geo }
+    );
+  }
+
+  // 災害の切り替え: 4 種類とも結果が出て、土砂で「浸水なし」の文言を使わない
+  await scenario(browser, base, "hazards", async (page, run) => {
+    await page.goto(`${base}?lang=en&spot=peace`, { waitUntil: "domcontentloaded" });
+    await waitLoaded(page, run);
+    await page.waitForSelector("#result:not([hidden]) ol.shelters li", { timeout: 40000 });
+    for (const hz of ["surge", "tsunami", "landslide", "flood"]) {
+      await page.click(`#hazard-group button[data-hz=${hz}]`);
+      await page.waitForTimeout(800);
+      const h2 = (await page.textContent("#result h2")) || "";
+      const li = await page.$$eval("#result ol.shelters li", (x) => x.length);
+      run.check(li >= 1, `${hz}: no shelters listed`);
+      if (hz === "landslide") run.check(!(await page.textContent("#result")).includes("No flooding"), "landslide says No flooding");
+      run.note(`${hz}: "${h2}", ${li} sites`);
+    }
+    await shot(page, run);
+  });
+
+  // 河川水位（架空の観測所データ）: 凡例とクリックで出る説明
+  await scenario(
+    browser,
+    base,
+    "river-fixture",
+    async (page, run) => {
+      await page.goto(`${base}?lang=en`, { waitUntil: "domcontentloaded" });
+      await waitLoaded(page, run);
+      await page.waitForFunction(() => window.__app?.state?.riverDs, null, { timeout: 20000 });
+      const pos = await page.evaluate(async () => {
+        const { viewer } = window.__app;
+        const [lon, lat] = window.__app.state.river.features[0].geometry.coordinates;
+        viewer.camera.setView({ destination: Cesium.Cartesian3.fromDegrees(lon, lat - 0.004, 600), orientation: { heading: 0, pitch: Cesium.Math.toRadians(-50), roll: 0 } });
+        viewer.scene.render();
+        const w = Cesium.SceneTransforms.worldToWindowCoordinates(viewer.scene, Cesium.Cartesian3.fromDegrees(lon, lat, 4));
+        const r = viewer.scene.canvas.getBoundingClientRect();
+        return { x: r.left + w.x, y: r.top + w.y };
+      });
+      await page.evaluate(() => window.__app.viewer.scene.render());
+      await page.mouse.click(pos.x, pos.y);
+      await page.waitForTimeout(500);
+      const txt = (await page.textContent("#result")) || "";
+      run.check(txt.includes("River water level"), "clicking the gauge did not open the river panel");
+      run.check(txt.includes("Not a live reading"), "river panel does not warn that the data is daily");
+      run.note(txt.replace(/\s+/g, " ").slice(0, 140));
+      await page.evaluate(() => (document.getElementById("legend-panel").open = true));
+      await shot(page, run);
+    },
+    { riverFixture: true }
   );
 
   await scenario(
