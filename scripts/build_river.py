@@ -6,6 +6,7 @@ Usage:
 """
 import argparse
 import re
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -31,6 +32,17 @@ def decode(b):
 
 def probe(raw: Path):
     raw.mkdir(parents=True, exist_ok=True)
+    browser = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+    for url in (f"{BASE}/", f"{BASE}/robots.txt", f"{BASE}/resource_download/109", f"{BASE}/en/datasets/1437"):
+        for ua in (UA["User-Agent"], browser):
+            try:
+                req = urllib.request.Request(url, headers={"User-Agent": ua, "Accept": "*/*", "Accept-Language": "ja"})
+                with urllib.request.urlopen(req, timeout=60) as r:
+                    print("OK", r.status, url, ua[:20], r.headers.get("Content-Type"))
+            except urllib.error.HTTPError as e:
+                print("ERR", e.code, url, ua[:20], dict(e.headers).get("Server"), e.read()[:300])
+            except Exception as e:
+                print("ERR", url, ua[:20], e)
     for key, ds in DATASETS.items():
         for url in (f"{BASE}/datasets/{ds}", f"{BASE}/api/3/action/package_show?id={ds}"):
             try:
