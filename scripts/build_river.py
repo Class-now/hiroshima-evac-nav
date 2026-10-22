@@ -1,27 +1,108 @@
 #!/usr/bin/env python3
-"""DoboX の河川水位（観測所一覧＋水位日集計 CSV）から data/river.json を作る（標準ライブラリだけ）。
+"""DoboX の河川水位から data/river.json を作る（標準ライブラリだけ）。
+
+使うデータ（広島県インフラマネジメント基盤 DoboX、河川課）:
+  観測情報_観測所一覧   https://hiroshima-dobox.jp/datasets/1274  （観測所の位置・基準水位）
+  観測情報_水位日集計   https://hiroshima-dobox.jp/datasets/1437  （1 日 1 ファイルの CSV）
 
 Usage:
-  python3 -I scripts/build_river.py --raw <download dir> [--fetch] [--probe]
+  python3 -I scripts/build_river.py --raw <download dir> --fetch      # DoboX から取得して作る
+  python3 -I scripts/build_river.py --raw <dir>                       # <dir> の CSV から作る
+  python3 -I scripts/build_river.py --raw <dir> --inspect             # CSV の列名と先頭行を表示するだけ
+  python3 -I scripts/build_river.py --stations a.csv --daily b.csv    # ファイルを直接指定
+
+注意:
+- DoboX は日本国外からのアクセスを 403 で拒否する（2026-10-22 に GitHub Actions の
+  ubuntu-latest から確認）。取得は日本国内のマシン（本人の PC やセルフホストランナー）で行う。
+- CSV の列名はまだ実物で確認できていない。COLUMNS の候補名で列を探し、見つからない列は
+  エラーで止める（--inspect で列名を見て COLUMNS に足す）。
 """
 import argparse
+import csv
+import datetime as dt
+import html
+import io
+import json
 import re
+import sys
 import urllib.error
 import urllib.request
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / "data" / "river.json"
 BASE = "https://hiroshima-dobox.jp"
 DATASETS = {"stations": 1274, "daily": 1437}
-UA = {"User-Agent": "hiroshima-evac-nav (+https://github.com/class-now/hiroshima-evac-nav)"}
+UA = {"User-Agent": "hiroshima-evac-nav/1.0 (+https://github.com/class-now/hiroshima-evac-nav)"}
+# 地図に出す範囲（広島市の中心部とその上流側を少し広めに）。
+BBOX = (132.30, 34.30, 132.62, 34.55)
+
+# 列名の候補（前から順に、正規化した列名に完全一致 → 部分一致で探す）。
+COLUMNS = {
+    "code": ["観測所コード", "観測所番号", "観測所ID", "観測所id", "局コード", "観測局コード", "コード"],
+    "name": ["観測所名", "観測所名称", "観測局名", "名称"],
+    "river": ["河川名", "河川"],
+    "lat": ["緯度", "北緯", "lat", "latitude"],
+    "lon": ["経度", "東経", "lon", "lng", "longitude"],
+    "kind": ["観測種別", "観測種類", "観測項目", "種別", "観測所種別"],
+    "standby": ["水防団待機水位", "待機水位", "通報水位"],
+    "caution": ["氾濫注意水位", "はん濫注意水位", "警戒水位"],
+    "evacuate": ["避難判断水位"],
+    "danger": ["氾濫危険水位", "はん濫危険水位", "危険水位"],
+    "date": ["観測日", "年月日", "日付", "観測年月日", "観測日時", "日時"],
+    "level": ["最新水位", "水位", "現在水位", "日平均水位", "平均水位"],
+    "max": ["日最高水位", "最高水位", "最大水位", "日最大水位"],
+    "maxtime": ["最高水位時刻", "最高水位発生時刻", "最大水位時刻", "最高時刻"],
+}
+THRESHOLDS = ["standby", "caution", "evacuate", "danger"]
+HOUR_RE = re.compile(r"^(\d{1,2})(?:時|:00|：00|h)?$")
+
+
+# ---- 取得 ----------------------------------------------------------------------
 
 
 def get(url):
     req = urllib.request.Request(url, headers=UA)
-    with urllib.request.urlopen(req, timeout=120) as r:
-        return r.read(), r.headers
+    try:
+        with urllib.request.urlopen(req, timeout=120) as r:
+            return r.read()
+    except urllib.error.HTTPError as e:
+        if e.code == 403:
+            sys.exit(f"403 Forbidden: {url}\nDoboX は日本国外からのアクセスを拒否します。日本国内のマシンで実行してください。")
+        raise
 
 
-def decode(b):
+def latest_resource(dataset_id):
+    """データセットのページから、名前に日付が入ったリソースのうち最新のものの id を返す。"""
+    page = get(f"{BASE}/datasets/{dataset_id}").decode("utf-8", "replace")
+    best = None
+    # リソースへのリンク（/resources/<id> または /resource_download/<id>）と、その近くの日付を拾う。
+    for m in re.finditer(r'href="[^"]*/(?:resources|resource_download)/(\d+)[^"]*"[^>]*>(.{0,300}?)</a>', page, re.S):
+        rid, label = m.group(1), html.unescape(re.sub(r"<[^>]+>", " ", m.group(2)))
+        d = re.search(r"(20\d\d)[-/年](\d{1,2})[-/月](\d{1,2})", label)
+        key = (dt.date(*map(int, d.groups())) if d else dt.date.min, int(rid))
+        if best is None or key > best[0]:
+            best = (key, rid, label.strip())
+    if not best:
+        sys.exit(f"datasets/{dataset_id} にリソースのリンクが見つかりません（ページの形が変わった？）")
+    print(f"datasets/{dataset_id}: latest resource {best[1]} {best[2]!r}")
+    return best[1]
+
+
+def fetch(raw: Path):
+    raw.mkdir(parents=True, exist_ok=True)
+    for key, ds in DATASETS.items():
+        rid = latest_resource(ds)
+        b = get(f"{BASE}/resource_download/{rid}")
+        (raw / f"{key}.csv").write_bytes(b)
+        (raw / f"{key}.resource").write_text(rid, encoding="utf-8")
+        print(f"fetched {key}: resource {rid}, {len(b)} bytes")
+
+
+# ---- CSV の読み取り（純粋関数。test/test_build_river.py で検査） ------------------------------
+
+
+def decode(b: bytes) -> str:
     for enc in ("utf-8-sig", "cp932"):
         try:
             return b.decode(enc)
@@ -30,43 +111,230 @@ def decode(b):
     return b.decode("utf-8", "replace")
 
 
-def probe(raw: Path):
-    raw.mkdir(parents=True, exist_ok=True)
-    browser = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
-    for url in (f"{BASE}/", f"{BASE}/robots.txt", f"{BASE}/resource_download/109", f"{BASE}/en/datasets/1437"):
-        for ua in (UA["User-Agent"], browser):
-            try:
-                req = urllib.request.Request(url, headers={"User-Agent": ua, "Accept": "*/*", "Accept-Language": "ja"})
-                with urllib.request.urlopen(req, timeout=60) as r:
-                    print("OK", r.status, url, ua[:20], r.headers.get("Content-Type"))
-            except urllib.error.HTTPError as e:
-                print("ERR", e.code, url, ua[:20], dict(e.headers).get("Server"), e.read()[:300])
-            except Exception as e:
-                print("ERR", url, ua[:20], e)
-    for key, ds in DATASETS.items():
-        for url in (f"{BASE}/datasets/{ds}", f"{BASE}/api/3/action/package_show?id={ds}"):
-            try:
-                b, h = get(url)
-            except Exception as e:
-                print("ERR", url, e)
+def read_csv(text: str):
+    rows = list(csv.reader(io.StringIO(text)))
+    rows = [r for r in rows if any(c.strip() for c in r)]
+    if not rows:
+        return [], []
+    return [c.strip() for c in rows[0]], rows[1:]
+
+
+def norm(s):
+    return re.sub(r"[\s　()（）\[\]［］]|\(m\)|（m）|ｍ|m$", "", str(s)).lower()
+
+
+def find_col(header, key, required=False):
+    names = [norm(h) for h in header]
+    cands = [norm(c) for c in COLUMNS[key]]
+    for c in cands:
+        if c in names:
+            return names.index(c)
+    for c in cands:
+        for i, n in enumerate(names):
+            if c and c in n:
+                return i
+    if required:
+        raise KeyError(f"列 {key}（候補: {COLUMNS[key]}）が見つかりません。列名: {header}")
+    return None
+
+
+def to_float(v):
+    if v is None:
+        return None
+    s = str(v).strip().replace(",", "")
+    s = s.translate(str.maketrans("０１２３４５６７８９．－", "0123456789.-"))
+    # 欠測・未観測の記号（"-", "欠測", "*" など）は None。
+    if not re.fullmatch(r"-?\d+(\.\d+)?", s):
+        return None
+    return float(s)
+
+
+def to_deg(v):
+    """10 進の度、または「34°23'45.6"」「34度23分45.6秒」「342345.6」（度分秒の数字だけ）を度にする。"""
+    s = str(v).strip()
+    f = to_float(s)
+    if f is not None:
+        if abs(f) > 1000:  # 度分秒を数字だけで書いたもの（ddmmss.s / dddmmss.s）
+            sign = -1 if f < 0 else 1
+            f = abs(f)
+            d, rest = divmod(f, 10000)
+            m, sec = divmod(rest, 100)
+            return sign * (d + m / 60 + sec / 3600)
+        return f
+    m = re.match(r"(\d+)\s*[°度]\s*(\d+)\s*['′分]\s*([\d.]+)?", s)
+    if m:
+        return int(m.group(1)) + int(m.group(2)) / 60 + float(m.group(3) or 0) / 3600
+    return None
+
+
+def parse_stations(text: str):
+    header, rows = read_csv(text)
+    ci = {k: find_col(header, k, required=k in ("code", "name", "lat", "lon")) for k in COLUMNS if k not in ("date", "level", "max", "maxtime")}
+    out = {}
+    for r in rows:
+        g = lambda k: r[ci[k]].strip() if ci.get(k) is not None and ci[k] < len(r) else ""
+        kind = g("kind")
+        # 水位の観測所だけ（種別の列があって「水位」を含まないものは除く）。
+        if kind and "水位" not in kind:
+            continue
+        lat, lon = to_deg(g("lat")), to_deg(g("lon"))
+        if lat is None or lon is None:
+            continue
+        if lat > lon:  # 緯度経度の取り違え
+            lat, lon = lon, lat
+        st = {"code": g("code"), "name": g("name"), "river": g("river"), "lon": round(lon, 6), "lat": round(lat, 6)}
+        th = {k: to_float(g(k)) for k in THRESHOLDS}
+        th = {k: v for k, v in th.items() if v is not None}
+        if th:
+            st["thresholds"] = th
+        out[st["code"]] = st
+    return out
+
+
+def hour_columns(header):
+    """「1時」「01:00」「24時」のような毎時の列 → [(hour, index)]。"""
+    cols = []
+    for i, h in enumerate(header):
+        m = HOUR_RE.match(norm(h).replace("時", "時"))
+        if m and 0 <= int(m.group(1)) <= 24:
+            cols.append((int(m.group(1)), i))
+    return cols if len(cols) >= 6 else []
+
+
+def parse_daily(text: str):
+    """水位日集計 → {code: {date, level, time, max, max_time}}。
+
+    2 つの形に対応する:
+    - 横持ち: 1 行 = 1 観測所 1 日。毎時の列（1時〜24時）があれば、値のある最後の時刻を「最新」とする。
+      毎時の列が無ければ「水位」「最高水位」などの列を使う。
+    - 縦持ち: 1 行 = 1 観測所の 1 時刻。観測所ごとに日時が最も新しい行を「最新」とする。
+    """
+    header, rows = read_csv(text)
+    i_code = find_col(header, "code", required=True)
+    i_date = find_col(header, "date")
+    hours = hour_columns(header)
+    i_level = None if hours else find_col(header, "level", required=True)
+    i_max = find_col(header, "max")
+    i_maxt = find_col(header, "maxtime")
+    out = {}
+    for r in rows:
+        if i_code >= len(r) or not r[i_code].strip():
+            continue
+        code = r[i_code].strip()
+        date = r[i_date].strip() if i_date is not None and i_date < len(r) else ""
+        rec = {"date": date}
+        if hours:
+            vals = [(h, to_float(r[i])) for h, i in hours if i < len(r)]
+            vals = [(h, v) for h, v in vals if v is not None]
+            if not vals:
                 continue
-            text = decode(b)
-            print("=" * 20, url, h.get("Content-Type"), len(b))
-            (raw / f"probe_{key}_{len(text)}.html").write_text(text, encoding="utf-8")
-            links = sorted(set(re.findall(r'href="([^"]*(?:resource|download)[^"]*)"', text)))
-            print("links:", links[:40])
-            for m in re.finditer(r"(resources?/\d+)[^<]{0,200}", text):
-                print("  ", m.group(0)[:200].replace("\n", " "))
-            print(text[:1500])
+            rec["time"] = f"{vals[-1][0]:02d}:00"
+            rec["level"] = vals[-1][1]
+            mh, mv = max(vals, key=lambda x: x[1])
+            rec["max"], rec["max_time"] = mv, f"{mh:02d}:00"
+        else:
+            lv = to_float(r[i_level]) if i_level < len(r) else None
+            if lv is None:
+                continue
+            rec["level"] = lv
+            if i_max is not None and i_max < len(r) and to_float(r[i_max]) is not None:
+                rec["max"] = to_float(r[i_max])
+            if i_maxt is not None and i_maxt < len(r) and r[i_maxt].strip():
+                rec["max_time"] = r[i_maxt].strip()
+        prev = out.get(code)
+        if not hours:
+            # 縦持ちでは行の順が時刻順とは限らないので、最高値は全行から取る。
+            peak = max(x for x in (rec.get("max"), rec["level"], prev and prev.get("max")) if x is not None)
+        if prev is None or (rec["date"], rec.get("time", "")) >= (prev["date"], prev.get("time", "")):
+            out[code] = rec
+        if not hours:
+            out[code]["max"] = peak
+    return out
+
+
+def stage(level, th):
+    """基準水位との比較 → 0 平常 / 1 水防団待機 / 2 氾濫注意 / 3 避難判断 / 4 氾濫危険。基準が無ければ None。"""
+    if level is None or not th:
+        return None
+    s = 0
+    for i, k in enumerate(THRESHOLDS, start=1):
+        if th.get(k) is not None and level >= th[k]:
+            s = i
+    return s
+
+
+def build(stations, daily, source=None, bbox=BBOX):
+    feats = []
+    for code, st in sorted(stations.items()):
+        if not (bbox[0] <= st["lon"] <= bbox[2] and bbox[1] <= st["lat"] <= bbox[3]):
+            continue
+        obs = daily.get(code)
+        p = {k: v for k, v in st.items() if k not in ("lon", "lat")}
+        if obs:
+            p.update(obs)
+            p["stage"] = stage(obs.get("level"), st.get("thresholds"))
+            p["stage_max"] = stage(obs.get("max"), st.get("thresholds"))
+        feats.append({"type": "Feature", "geometry": {"type": "Point", "coordinates": [st["lon"], st["lat"]]}, "properties": p})
+    dates = sorted({f["properties"]["date"] for f in feats if f["properties"].get("date")})
+    return {
+        "type": "FeatureCollection",
+        "generated": dt.datetime.now(dt.timezone(dt.timedelta(hours=9))).isoformat(timespec="minutes"),
+        "observed": dates[-1] if dates else None,
+        "source": source or {},
+        "features": feats,
+    }
+
+
+# ---- main -----------------------------------------------------------------------
+
+
+def inspect(path: Path):
+    header, rows = read_csv(decode(path.read_bytes()))
+    print(f"== {path} ({len(rows)} rows)")
+    print("columns:", header)
+    for r in rows[:3]:
+        print("  ", r)
+    for k in COLUMNS:
+        i = find_col(header, k)
+        if i is not None:
+            print(f"  {k:9s} -> {header[i]}")
+    if hour_columns(header):
+        print("  hourly columns:", [header[i] for _, i in hour_columns(header)])
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--raw", required=True, type=Path)
-    ap.add_argument("--probe", action="store_true")
+    ap.add_argument("--raw", type=Path, help="stations.csv / daily.csv を置く（取得する）ディレクトリ")
+    ap.add_argument("--fetch", action="store_true")
+    ap.add_argument("--inspect", action="store_true")
+    ap.add_argument("--stations", type=Path)
+    ap.add_argument("--daily", type=Path)
+    ap.add_argument("--out", type=Path, default=OUT)
     a = ap.parse_args()
-    if a.probe:
-        probe(a.raw)
+    if a.fetch:
+        if not a.raw:
+            ap.error("--fetch には --raw が要ります")
+        fetch(a.raw)
+    sp = a.stations or (a.raw / "stations.csv" if a.raw else None)
+    dp = a.daily or (a.raw / "daily.csv" if a.raw else None)
+    if not sp or not dp:
+        ap.error("--raw か --stations/--daily を指定してください")
+    if a.inspect:
+        inspect(sp)
+        inspect(dp)
+        return
+    src = {}
+    for key, p in (("stations", sp), ("daily", dp)):
+        rid = p.with_suffix(".resource")
+        src[key] = {"dataset": f"{BASE}/datasets/{DATASETS[key]}"}
+        if rid.exists():
+            src[key]["resource"] = f"{BASE}/resources/{rid.read_text().strip()}"
+    gj = build(parse_stations(decode(sp.read_bytes())), parse_daily(decode(dp.read_bytes())), src)
+    if not gj["features"]:
+        sys.exit("範囲内の水位観測所が 0 件。列の対応を --inspect で確認してください")
+    with_obs = sum(1 for f in gj["features"] if "level" in f["properties"])
+    a.out.write_text(json.dumps(gj, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(f"{a.out.name}: {len(gj['features'])} stations ({with_obs} with water level), observed {gj['observed']}")
 
 
 if __name__ == "__main__":

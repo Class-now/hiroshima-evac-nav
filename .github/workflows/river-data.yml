@@ -1,17 +1,37 @@
+# DoboX の河川水位（観測所一覧＋水位日集計）を取り込み、data/river.json を更新してコミットする。
+#
+# DoboX は日本国外からのアクセスを 403 で拒否する（GitHub の ubuntu-latest は米国なので使えない）。
+# そのため日本国内のセルフホストランナーで動かす。リポジトリ変数 RIVER_RUNNER にランナーのラベル
+# （例: self-hosted）を入れると有効になる。未設定のあいだはジョブを飛ばす（失敗にはしない）。
+# 手順は docs/river-data.md。
 name: river-data
 on:
-  push:
-    branches: [mvp-1101]
-    paths: [scripts/build_river.py, .github/workflows/river-data.yml]
+  schedule:
+    - cron: "17 0 * * *" # 毎日 09:17 JST
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: river-data
+  cancel-in-progress: false
 jobs:
   build:
-    runs-on: ubuntu-latest
+    if: vars.RIVER_RUNNER != ''
+    runs-on: ${{ vars.RIVER_RUNNER }}
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: python3 -I scripts/build_river.py --raw "$RUNNER_TEMP/river" --probe
+      - name: Build data/river.json
+        run: python3 -I scripts/build_river.py --raw "$RUNNER_TEMP/river" --fetch
+      - name: Unit tests
+        run: python3 -m unittest discover -s test -p "test_*.py"
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- data/river.json && git ls-files --error-unmatch data/river.json >/dev/null 2>&1; then
+            echo "no change"; exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/river.json
+          git commit -m "河川水位を更新（DoboX 水位日集計）"
+          git push
