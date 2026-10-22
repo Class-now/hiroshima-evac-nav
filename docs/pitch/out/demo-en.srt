@@ -1,0 +1,47 @@
+1
+00:00:00,300 --> 00:00:07,800
+Hiroshima 3D Evacuation Map
+
+2
+00:00:08,300 --> 00:00:19,800
+A flat hazard map can't tell you which floor is safe
+
+3
+00:00:20,300 --> 00:00:34,800
+Tap a building: water depth and which floor to go up to
+
+4
+00:00:35,300 --> 00:00:49,800
+Green: go upstairs. Red: go to an evacuation site
+
+5
+00:00:50,300 --> 00:01:04,800
+Switch between flood, storm surge and tsunami
+
+6
+00:01:05,300 --> 00:01:19,800
+Landslide zones from Hiroshima Prefecture's DoboX
+
+7
+00:01:20,300 --> 00:01:39,800
+The 3 nearest sites usable for this hazard
+
+8
+00:01:40,300 --> 00:01:59,800
+Daily river levels from DoboX, compared with alert levels
+
+9
+00:02:00,300 --> 00:02:19,800
+Easy Japanese, English, Chinese, Korean
+
+10
+00:02:20,300 --> 00:02:34,800
+Works on phones, even for first-time users
+
+11
+00:02:35,300 --> 00:02:47,800
+Built on open data
+
+12
+00:02:48,300 --> 00:02:59,800
+These are estimates. Follow Hiroshima City's instructions.

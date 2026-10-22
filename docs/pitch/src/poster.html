@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>DoboX ポスター（A4 縦）</title>
+<!--
+  DoboX データチャレンジ 2026 応募用 A4 縦ポスター。
+  構成・本文: docs/pitch/dobox-poster.md。外部ネット参照なし（フォントはローカル、画像は ../out/screens/ と img/qr.svg）。
+  画像はスクリーンショット原寸（PC 3200x1800）を CSS で切り抜いて使う（.crop の --x/--y/--w/--h は原寸の px）。
+  同じ構図で撮り直せば、そのまま差し替わる。
+  【本人】と書いた所は本人が書く／確認する所。
+  文字サイズ: ブロック見出し（h2）18pt 以上、本文 9pt 以上。
+-->
+<style>
+@page { size: A4; margin: 0; }
+:root {
+  --ink: #1b1f24;
+  --muted: #4d545e;
+  --dobox: #0b6e4f;       /* DoboX 由来ブロックの枠色 */
+  --dobox-bg: #eef7f2;
+  --plateau: #5b4bb7;
+  --gsi: #8a5a00;
+  --line: #c9ced6;
+  --note: #b3261e;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #fff; }
+body {
+  font-family: "IPAPGothic", "IPAGothic", "WenQuanYi Zen Hei", sans-serif;
+  color: var(--ink);
+  font-size: 9pt;
+  line-height: 1.26;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.page {
+  width: 210mm; height: 297mm; overflow: hidden;
+  padding: 6mm 7mm 4.5mm;
+  display: flex; flex-direction: column; gap: 2mm;
+}
+h1 { font-size: 25pt; margin: 0; line-height: 1.1; }
+h2 { font-size: 18pt; margin: 0 0 .8mm; line-height: 1.05; display: flex; align-items: center; gap: 2mm; }
+h2 .tag { font-size: 9pt; font-weight: normal; color: #fff; background: var(--dobox); padding: .2mm 1.6mm; border-radius: 1mm; }
+h3 { font-size: 10.5pt; margin: 0; line-height: 1.2; }
+p { margin: 0; }
+ul { margin: 0; padding-left: 3.6mm; }
+li { margin: 0 0 .4mm; }
+.muted { color: var(--muted); }
+.req { color: var(--note); font-weight: bold; }
+
+/* A. タイトル帯 */
+.title { display: flex; align-items: center; gap: 4mm; border-bottom: 1mm solid var(--dobox); padding-bottom: 1.6mm; }
+.title .text { flex: 1; }
+.title .sub { font-size: 11pt; margin-top: 1.4mm; }
+.title .sub b { color: var(--dobox); }
+.title .meta { margin-top: 1mm; color: var(--muted); }
+.qr { display: flex; align-items: center; gap: 2mm; }
+.qr img { width: 21mm; height: 21mm; display: block; }
+.qr .url { font-size: 9pt; line-height: 1.25; width: 33mm; }
+
+/* DoboX ブロック共通 */
+.dobox { border: .55mm solid var(--dobox); background: var(--dobox-bg); border-radius: 2mm; padding: 1.6mm 2.4mm 2mm; }
+.box { border: .3mm solid var(--line); border-radius: 2mm; padding: 1.6mm 2.4mm 2mm; }
+
+/* B. 3 本柱 */
+.pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2mm; }
+.pillar { background: #fff; border-radius: 1.5mm; border: .3mm solid #b9dcc9; padding: 1.4mm 1.8mm; display: flex; flex-direction: column; gap: .8mm; }
+.pillar h3 { color: var(--dobox); }
+.pillar h3 .arrow { color: var(--ink); }
+.pillar .src { color: var(--muted); }
+.num { font-size: 14pt; font-weight: bold; color: var(--dobox); line-height: 1; }
+
+/* 切り抜き: 原寸 px で指定 */
+.crop { position: relative; overflow: hidden; aspect-ratio: var(--w) / var(--h); border: .3mm solid var(--line); border-radius: 1mm; background: #e8ecf0; }
+.crop img {
+  display: block;
+  width: calc(3200 / var(--w) * 100%);
+  margin-left: calc(var(--x) / var(--w) * -100%);
+  margin-top: calc(var(--y) / var(--w) * -100%);
+}
+
+/* C. メイン画面 + D. 使い方 */
+.main { display: grid; grid-template-columns: 98mm 1fr; gap: 2.4mm; }
+.shot { position: relative; align-self: start; }
+.shot img.full { display: block; width: 100%; border: .3mm solid var(--line); border-radius: 1mm; }
+.lab { position: absolute; font-size: 9pt; font-weight: bold; line-height: 1.15; padding: .3mm 1.2mm; border-radius: 1mm; color: #fff; white-space: nowrap; box-shadow: 0 .3mm .8mm rgba(0,0,0,.25); }
+.lab.d { background: var(--dobox); } .lab.p { background: var(--plateau); } .lab.c { background: #333; }
+.prov { color: var(--note); font-size: 9pt; font-weight: bold; margin-top: .5mm; }
+.legend-list { list-style: none; padding: 0; }
+.legend-list li { margin-bottom: .8mm; }
+.k { display: inline-block; font-size: 9pt; font-weight: bold; color: #fff; padding: 0 1.1mm; border-radius: .8mm; margin-right: .8mm; }
+.k.d { background: var(--dobox); } .k.p { background: var(--plateau); } .k.g { background: var(--gsi); }
+.howto { margin-top: 1.4mm; background: #fff; border-radius: 1.5mm; border: .3mm solid #b9dcc9; padding: 1.2mm 1.8mm 1.4mm; }
+.steps { list-style: none; padding: 0; counter-reset: s; margin: 0; }
+.steps li { counter-increment: s; position: relative; padding-left: 6mm; margin-bottom: .9mm; }
+.steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 4.4mm; height: 4.4mm; border-radius: 50%; background: var(--dobox); color: #fff; font-weight: bold; font-size: 9.5pt; text-align: center; line-height: 4.4mm; }
+
+/* E. 4 言語 */
+.lang-row { display: grid; grid-template-columns: 1fr 56mm; gap: 2.4mm; align-items: start; }
+.langs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.4mm; }
+.langs figure { margin: 0; }
+.langs figcaption { font-size: 9pt; font-weight: bold; text-align: center; margin-top: .3mm; }
+
+/* E + H, F */
+.row-eh { display: grid; grid-template-columns: 1fr 58mm; gap: 2mm; }
+.flow { display: grid; grid-template-columns: 1fr 3.4mm 1fr 3.4mm 1fr 3.4mm 1fr; align-items: stretch; }
+.flow .n { border-radius: 1.5mm; padding: 1mm 1.4mm; background: #fff; border: .4mm solid var(--dobox); }
+.flow .n.alt { border-color: var(--plateau); }
+.flow .n b { display: block; }
+.flow .ar { display: flex; align-items: center; justify-content: center; }
+.flow .ar svg { width: 3.4mm; height: 3.4mm; }
+.side { margin-top: .8mm; }
+.side b { color: var(--plateau); }
+
+/* G. 出典 */
+table { border-collapse: collapse; width: 100%; font-size: 9pt; line-height: 1.2; }
+th, td { border-bottom: .25mm solid var(--line); padding: .35mm 1mm; text-align: left; vertical-align: top; }
+th { background: #f1f3f5; }
+tr.dx td:first-child { border-left: 1mm solid var(--dobox); }
+.credit { margin-top: .8mm; line-height: 1.25; }
+.foot { margin-top: auto; display: flex; justify-content: space-between; color: var(--muted); border-top: .3mm solid var(--line); padding-top: .6mm; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- A. タイトル帯 -->
+  <header class="title">
+    <div class="text">
+      <h1>広島 3D 多言語避難ナビ</h1>
+      <p class="sub"><b>DoboX の防災データ</b> × 3D 都市モデルで、「今いる建物でどう動くか」を 4 言語で</p>
+      <p class="meta">広島市 中・東・南・西区／スマホ・PC のブラウザで動く Web アプリ（登録・インストール不要）</p>
+    </div>
+    <div class="qr">
+      <img src="img/qr.svg" alt="公開 URL の QR コード">
+      <div class="url">class-now.github.io/<br>hiroshima-evac-nav/</div>
+    </div>
+  </header>
+
+  <!-- B. DoboX のデータでできること -->
+  <section class="dobox">
+    <h2>DoboX のデータでできること <span class="tag">DoboX 由来</span></h2>
+    <div class="pillars">
+      <div class="pillar">
+        <h3>避難所情報 <span class="arrow">→</span> どこへ逃げるか</h3>
+        <p><span class="num">442</span> か所。<b>災害ごとに使える場所だけ</b>から、近い 3 件を方角と距離で示す。</p>
+        <div class="crop" style="--x:16;--y:1228;--w:848;--h:230"><img src="../out/screens/near-here-ja.png" alt="最寄りの避難場所 3 件の表示"></div>
+        <p class="src">広島県 危機管理課（国土地理院と照合）</p>
+      </div>
+      <div class="pillar">
+        <h3>土砂災害警戒区域 <span class="arrow">→</span> 危ない場所か</h3>
+        <p><span class="num">843</span> 区域を地図に重ね、選んだ地点が<b>区域内なら注意</b>を出す。</p>
+        <div class="crop" style="--x:16;--y:958;--w:848;--h:230"><img src="../out/screens/hazard-landslide-ja.png" alt="土砂災害警戒区域の地点判定"></div>
+        <p class="src">広島県 砂防課</p>
+      </div>
+      <div class="pillar">
+        <h3>河川水位 <span class="arrow">→</span> 今、川はどうか</h3>
+        <p>観測所 <span class="num">37</span> か所の最新水位を<b>基準水位と比べて色分け</b>。毎日取り込む。</p>
+        <div class="crop" style="--x:16;--y:1035;--w:848;--h:230"><img src="../out/screens/river-ja.png" alt="河川水位の表示"></div>
+        <p class="src">広島県 河川課（10/22 値あり 36 か所）</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- C. メイン画面 ＋ D. 使い方 3 ステップ -->
+  <section class="dobox">
+    <div class="main">
+      <div>
+        <h2>メイン画面 <span class="tag">DoboX ＋ PLATEAU</span></h2>
+        <div class="shot">
+          <img class="full" src="../out/screens/near-here-ja.png" alt="アプリのメイン画面（やさしい日本語）">
+          <span class="lab p" style="right:21.5%;top:31%">PLATEAU：浸水深の色（凡例）▶</span>
+          <span class="lab d" style="right:21.5%;top:44%">DoboX 河川水位（凡例・日付）▶</span>
+          <span class="lab d" style="left:32%;top:19%">◀ DoboX 避難所情報（ピン）</span>
+          <span class="lab c" style="left:50%;top:60%">ブラウザ内で計算：近い 3 件</span>
+          <span class="lab d" style="left:27.5%;top:76%">◀ DoboX＋国土地理院：災害ごとの可否</span>
+        </div>
+        <p class="prov">暫定画面（3D 建物・背景地図なし）【本人】差し替え <span class="muted" style="font-weight:normal">2026-10-22 撮影</span></p>
+      </div>
+      <div>
+        <ul class="legend-list">
+          <li><span class="k d">DoboX</span>避難場所のピン、土砂災害警戒区域（茶色の面）、河川観測所の「水」マーカー</li>
+          <li><span class="k p">PLATEAU</span>3D 建物と、その色（建物ごとの浸水深）、浸水想定区域</li>
+          <li><span class="k g">国土地理院</span>避難場所の災害種別・備考、背景地図</li>
+        </ul>
+        <div class="howto">
+          <h2>使い方 3 ステップ</h2>
+          <ol class="steps">
+            <li>地図の<b>建物をタップ</b>（または「いまの場所」）</li>
+            <li>浸水の深さと<b>「N 階より上へ」／「避難場所へ」</b>が出る</li>
+            <li>近い<b>避難場所 3 件</b>と、近くの<b>川の水位</b>を確認</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- E. 4 言語 ＋ H. 限界・注意 -->
+  <div class="row-eh">
+    <section class="box">
+      <h2>4 言語</h2>
+      <div class="langs">
+        <figure><div class="crop" style="--x:16;--y:958;--w:848;--h:300"><img src="../out/screens/peace-depth-ja.png" alt=""></div><figcaption>やさしい日本語</figcaption></figure>
+        <figure><div class="crop" style="--x:16;--y:958;--w:848;--h:300"><img src="../out/screens/peace-depth-en.png" alt=""></div><figcaption>English</figcaption></figure>
+        <figure><div class="crop" style="--x:16;--y:958;--w:848;--h:300"><img src="../out/screens/peace-depth-zh.png" alt=""></div><figcaption>简体中文</figcaption></figure>
+        <figure><div class="crop" style="--x:16;--y:958;--w:848;--h:300"><img src="../out/screens/peace-depth-ko.png" alt=""></div><figcaption>한국어</figcaption></figure>
+      </div>
+      <p style="margin-top:.6mm">避難場所名は機械翻訳せず、ローマ字＋施設の種類（例: Motomachi Elementary School）に日本語名を並べる。着想: <span class="req">【本人】体験・動機を 1〜2 文で</span></p>
+    </section>
+    <section class="box">
+      <h2>限界・注意</h2>
+      <ul>
+        <li>浸水深は想定最大規模の予測値。避難は広島市の発表に従う</li>
+        <li>避難場所までの距離は直線距離</li>
+        <li>河川水位は 1 日 1 回の取り込みで、警報の代わりではない</li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- F. データの流れ -->
+  <section class="dobox">
+    <h2>データの流れ（DoboX → アプリ）</h2>
+    <div class="flow">
+      <div class="n"><b>DoboX</b>避難所・警戒区域・河川水位</div>
+      <div class="ar"><svg viewBox="0 0 10 10"><path d="M1 5h6M5 2l3 3-3 3" fill="none" stroke="#0b6e4f" stroke-width="1.6"/></svg></div>
+      <div class="n"><b>Python で変換</b>河川水位は国内の PC で毎日</div>
+      <div class="ar"><svg viewBox="0 0 10 10"><path d="M1 5h6M5 2l3 3-3 3" fill="none" stroke="#0b6e4f" stroke-width="1.6"/></svg></div>
+      <div class="n"><b>GeoJSON・JSON を同梱</b>442 か所・843 区域・37 か所</div>
+      <div class="ar"><svg viewBox="0 0 10 10"><path d="M1 5h6M5 2l3 3-3 3" fill="none" stroke="#0b6e4f" stroke-width="1.6"/></svg></div>
+      <div class="n alt"><b>ブラウザで表示</b>最寄りも端末内で計算</div>
+    </div>
+    <p class="side">DoboX はブラウザから直接読めず（CORS なし）国外からも接続できないため事前に変換。<b>PLATEAU</b> の 3D Tiles は直接読む。</p>
+  </section>
+
+  <!-- G. 使用データと出典 -->
+  <section class="box">
+    <h2>使用データと出典</h2>
+    <table>
+      <colgroup><col style="width:50%"><col style="width:21%"><col></colgroup>
+      <thead><tr><th>データ</th><th>提供元</th><th>ライセンス・条件</th></tr></thead>
+      <tbody>
+        <tr class="dx"><td>DoboX 避難所情報</td><td>広島県 危機管理課</td><td>CC BY 4.0</td></tr>
+        <tr class="dx"><td>DoboX 土砂災害警戒区域・特別警戒区域情報</td><td>広島県 砂防課</td><td>CC BY 4.0</td></tr>
+        <tr class="dx"><td>DoboX 観測情報_観測所一覧・観測情報_水位日集計</td><td>広島県 河川課</td><td>CC BY 4.0（利用規約）※</td></tr>
+        <tr><td>3D 都市モデル PLATEAU（広島市 2024 年度）</td><td>国土交通省</td><td>PLATEAU の利用規約</td></tr>
+        <tr><td>指定緊急避難場所データ・地理院タイル（淡色地図）</td><td>国土地理院</td><td>出典明示（避難場所は加工して作成）</td></tr>
+        <tr><td>鉄道データ N02・GTFS-JP（停留場名）・CesiumJS</td><td>国交省・広島県バス協会 他</td><td>CC BY 4.0・CC0・Apache-2.0</td></tr>
+      </tbody>
+    </table>
+    <p class="credit">出典：広島県インフラマネジメント基盤（DoboX）（CC BY 4.0 https://creativecommons.org/licenses/by/4.0/deed.ja ）。避難所情報（広島県 危機管理課）、土砂災害警戒区域・特別警戒区域情報（広島県 砂防課）、観測情報_観測所一覧・観測情報_水位日集計（広島県 河川課）を加工して作成。※ 河川の 2 データはデータセットのページにライセンスの個別記載がなく、DoboX 利用規約（CC BY 4.0）による。</p>
+  </section>
+
+  <footer class="foot">
+    <span>DoboX データチャレンジ 2026 応募作品</span>
+    <span>作者: <span class="req">【本人】</span></span>
+  </footer>
+</div>
+</body>
+</html>

@@ -29,6 +29,11 @@
 - 独立レビュー（サブエージェント）の指摘を反映済み。
 - この作業環境からは PLATEAU・地理院タイル・CDN・DoboX に接続できず、3D 建物が出た状態の画面は確認できていない（ローカルの Cesium と `--offline` で UI だけ確認）。
 
+## 2026-10-22（ブランチ pitch-assets）— 応募資料の初版
+- `scripts/pitch/`（capture・video・pdf）で、スクリーンショット 22 枚・PLATEAU スライド 12 枚（PDF 約 3.3MB）・3 分デモ動画（180 秒、日本語字幕焼き込み、英語 .srt、約 4.3MB）・DoboX A4 ポスター PDF・UDC 100 字最終案を作った。成果物は `docs/pitch/out/`、ソースは `docs/pitch/src/`。
+- 作業したクラウド環境は PLATEAU・地理院タイル・CDN・GitHub Pages に接続できず（ネットワーク設定で拒否）、画面は全部 `--offline`（3D 建物・背景地図なし）の暫定。国内の普通のネットで `npm run pitch:capture && npm run pitch:pdf && npm run pitch:video` を回せば 3D ありで作り直せる（`docs/pitch/out/README.md`）。
+- 録画のこつ: 録画中は `scene.requestRender()` を 0.2 秒ごとに呼ぶ（requestRenderMode=false にすると SwiftShader が重すぎる）。`#toast` を MutationObserver で隠すときは、すでに hidden なら触らない（触ると無限ループでページが落ちる）。
+
 ## 次にやること
 1. ~~**本人**: 河川水位の列名確認と `data/river.json` 作成~~ → **済（10/22、本人の PC〈国内〉から取得）**。実データの形に合わせて `build_river.py` を直した: 観測所一覧はヘッダー 3 行（3 行目が列名。データ種別 4 = 水位、観測所番号は所管ごとに重複するので「事務所/所管/番号」をキーに）、水位日集計は観測所が列に並ぶ横持ちで 10 分ごとの値（`**`・`--`・`CC` は欠測など）。最新のリソースは古い順に 10 件ずつのページの最後のページにある（1 ページ目だけ見て 2024-03-14 を選んでいた）。当日のファイルは当日中も更新される（10/22 21:29 に 21:20 まで）。`data/river.json` は範囲内 37 か所（値あり 36）、10/22 21:20 の値。利用条件はデータセットのページに個別の記載なし、DoboX 利用規約で CC BY 4.0・出典「広島県インフラマネジメント基盤」（アプリの出典表示はこれに合う）。詳細は `docs/river-data.md`。毎日の更新は、本人の Windows PC のタスクスケジューラ `hiroshima-river-update` で毎日 9:20 に実行する（10/22 に PM が設定し、試しに 1 回動かして成功）。チェックアウトしているブランチに push するので、PR #1 をマージしたら作業ツリーを main に切り替える。
 2. **本人**: 訳語の確認（`docs/translation-review-shelters.md` の conf=low 12 件と施設種別、`docs/translation-review-ui.md` の新しい文言）。直したら `python3 -I scripts/build_shelter_names.py`。

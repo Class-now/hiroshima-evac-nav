@@ -1,5 +1,7 @@
 # 3 分デモ動画 絵コンテ
 
+> 自動で作る版: `npm run pitch:video`（`scripts/pitch/video.mjs`）がこの 12 カットを Playwright で録画し、ffmpeg で日本語字幕を画面下の帯に焼き込む（BGM なし）。英語字幕は `out/demo-en.srt`。初版（`out/demo.mp4`）は 3D なしの暫定。詳しくは `out/README.md`。
+
 - 形式: 画面録画＋字幕のみ（ナレーションなし、BGM は任意）。合計 180 秒。
 - 字幕: 日本語と英語を上下 2 段で併記（上: 日本語、下: English）。1 字幕は 2 行以内、表示 3 秒以上。
 - 用途: PLATEAU AWARD の提出動画を想定。UDC・DoboX でも流用可。
