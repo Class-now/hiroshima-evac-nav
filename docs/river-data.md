@@ -65,6 +65,14 @@ crontab -e
 20 9 * * * cd $HOME/path/to/hiroshima-evac-nav && /bin/sh scripts/update_river.sh >> /tmp/river.log 2>&1
 ```
 
+Windows（この PC の運用、2026-10-22〜）: タスクスケジューラの `hiroshima-river-update` が毎日 9:20 に次を窓なしで動かす。`python3` は Microsoft Store のスタブなので `PYTHON=python` を渡す。ログは `~/.config/agent-notify/river-update.log`。
+
+```
+conhost.exe --headless "C:\Program Files\Gitinash.exe" -lc "cd '/c/For Claude/hiroshima-evac-nav' && PYTHON=python sh scripts/update_river.sh >> ~/.config/agent-notify/river-update.log 2>&1"
+```
+
+チェックアウトしているブランチに push する。PR #1 をマージしたら、この作業ツリーを main に切り替える。
+
 PC が起きている日だけ更新される。push 先のブランチ（main に直接か、更新用ブランチか）は PM と決める。
 
 ### B. GitHub Actions ＋日本国内のセルフホストランナー

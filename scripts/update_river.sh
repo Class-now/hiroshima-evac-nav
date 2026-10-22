@@ -5,10 +5,11 @@
 # cron / launchd で毎日動かすこともできる（docs/river-data.md）。
 set -eu
 cd "$(dirname "$0")/.."
+PY="${PYTHON:-python3}"  # Windows は python3 が Store のスタブなので PYTHON=python を渡す
 RAW="${TMPDIR:-/tmp}/hiroshima-evac-nav-river"
 rm -rf "$RAW"
-python3 -I scripts/build_river.py --raw "$RAW" --fetch
-python3 -m unittest discover -s test -p "test_*.py"
+"$PY" -I scripts/build_river.py --raw "$RAW" --fetch
+"$PY" -m unittest discover -s test -p "test_*.py"
 if git diff --quiet -- data/river.json && git ls-files --error-unmatch data/river.json >/dev/null 2>&1; then
   echo "no change"; exit 0
 fi
