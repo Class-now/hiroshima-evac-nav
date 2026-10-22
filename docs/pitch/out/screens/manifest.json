@@ -1,0 +1,119 @@
+{
+  "taken": "2026-10-22T13:22:37.886Z",
+  "mode": "offline",
+  "base": "local",
+  "note": "PLATEAU 3D Tiles・地理院タイルに接続できない環境で撮影。建物と背景地図は写っていない（暫定）。",
+  "river_observed": "2026-10-22",
+  "scenes": [
+    {
+      "name": "overview",
+      "desc": "中区を引きで（浸水深の色）",
+      "file": "screens/overview.png"
+    },
+    {
+      "name": "peace-depth-ja",
+      "desc": "平和記念公園付近・浸水深の色・建物の結果（やさしい日本語）",
+      "file": "screens/peace-depth-ja.png"
+    },
+    {
+      "name": "peace-refuge-ja",
+      "desc": "上の階へ逃げられる建物（緑・赤）",
+      "file": "screens/peace-refuge-ja.png"
+    },
+    {
+      "name": "peace-depth-en",
+      "desc": "同じ地点の結果（en）",
+      "file": "screens/peace-depth-en.png"
+    },
+    {
+      "name": "peace-depth-zh",
+      "desc": "同じ地点の結果（zh）",
+      "file": "screens/peace-depth-zh.png"
+    },
+    {
+      "name": "peace-depth-ko",
+      "desc": "同じ地点の結果（ko）",
+      "file": "screens/peace-depth-ko.png"
+    },
+    {
+      "name": "spot-station-ja",
+      "desc": "?spot=station",
+      "file": "screens/spot-station-ja.png"
+    },
+    {
+      "name": "spot-hondori-ja",
+      "desc": "?spot=hondori",
+      "file": "screens/spot-hondori-ja.png"
+    },
+    {
+      "name": "spot-castle-ja",
+      "desc": "?spot=castle",
+      "file": "screens/spot-castle-ja.png"
+    },
+    {
+      "name": "hazard-surge-ja",
+      "desc": "災害の切り替え: surge",
+      "file": "screens/hazard-surge-ja.png"
+    },
+    {
+      "name": "hazard-tsunami-ja",
+      "desc": "災害の切り替え: tsunami",
+      "file": "screens/hazard-tsunami-ja.png"
+    },
+    {
+      "name": "hazard-landslide-ja",
+      "desc": "災害の切り替え: landslide",
+      "file": "screens/hazard-landslide-ja.png"
+    },
+    {
+      "name": "landslide-castle-en",
+      "desc": "土砂災害警戒区域（DoboX）・広島城付近から北側",
+      "file": "screens/landslide-castle-en.png"
+    },
+    {
+      "name": "river-ja",
+      "desc": "河川水位（DoboX、data/river.json の実データ）: 三篠橋(国)",
+      "file": "screens/river-ja.png"
+    },
+    {
+      "name": "river-en",
+      "desc": "河川水位（English）",
+      "file": "screens/river-en.png"
+    },
+    {
+      "name": "near-here-ja",
+      "desc": "現在地（平和記念公園に設定）→ 最寄りの避難場所 3 件",
+      "file": "screens/near-here-ja.png"
+    },
+    {
+      "name": "sources-ja",
+      "desc": "データの出典ダイアログ",
+      "file": "screens/sources-ja.png"
+    },
+    {
+      "name": "mobile-onboarding-ja",
+      "desc": "スマホ 375px: 初回の使い方",
+      "file": "screens/mobile-onboarding-ja.png"
+    },
+    {
+      "name": "mobile-result-ja",
+      "desc": "スマホ 375px: 建物の結果",
+      "file": "screens/mobile-result-ja.png"
+    },
+    {
+      "name": "mobile-result-en",
+      "desc": "スマホ 375px: 建物の結果（English）",
+      "file": "screens/mobile-result-en.png"
+    },
+    {
+      "name": "mobile-layers-ja",
+      "desc": "スマホ 375px: レイヤー切替と凡例",
+      "file": "screens/mobile-layers-ja.png"
+    },
+    {
+      "name": "mobile-river-ja",
+      "desc": "スマホ 375px: 河川水位",
+      "file": "screens/mobile-river-ja.png"
+    }
+  ]
+}
