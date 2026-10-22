@@ -39,7 +39,7 @@ const state = {
   buildings: [],
   buildingsFailed: false,
   areas: { flood: [], surge: [], tsunami: [] },
-  areaStatus: { flood: "idle", surge: "idle", tsunami: "idle" }, // idle | loading | ok | failed
+  areaStatus: { flood: "idle", surge: "idle", tsunami: "idle" }, // idle | loading | ok | partial | failed
   landslide: null,
   shelters: [],
   stops: [],
@@ -167,6 +167,9 @@ async function loadTileset(url, kind) {
     pending.set(ts, 0);
     updateLoading();
     scene.requestRender();
+    // A spot picked while this hazard's area tiles were still loading can now be answered.
+    const sel = state.selection;
+    if (kind === state.hazard && sel && !state.riverSel && !(sel.areaHz === kind && sel.areaOk)) render();
   });
   ts.loadProgress.addEventListener((requests, processing) => {
     pending.set(ts, requests + processing);
@@ -297,12 +300,13 @@ function applyStyles() {
 }
 
 async function loadAreas(hazard) {
-  if (state.areaStatus[hazard] === "ok" || state.areaStatus[hazard] === "loading") return;
+  if (state.areaStatus[hazard] !== "idle" && state.areaStatus[hazard] !== "failed") return;
   state.areaStatus[hazard] = "loading";
   const urls = PLATEAU[hazard] || [];
   const sets = await Promise.all(urls.map((u) => loadTileset(u, hazard).catch((e) => console.warn(hazard, e))));
   state.areas[hazard] = sets.filter(Boolean);
-  state.areaStatus[hazard] = state.areas[hazard].length ? "ok" : "failed";
+  // ok only when every river's tileset loaded; otherwise an empty pick can't mean "no flooding".
+  state.areaStatus[hazard] = !state.areas[hazard].length ? "failed" : state.areas[hazard].length < urls.length ? "partial" : "ok";
   const st = areaStyle();
   for (const ts of state.areas[hazard]) ts.style = st;
 }
@@ -402,11 +406,14 @@ async function loadRiver() {
   const gj = await loadJson("data/river.json");
   if (!gj || !gj.features) return;
   state.river = gj;
+  // 日集計の更新が止まっていたら（3 日より古い）、色で「平常」と見せないよう灰色にする。
+  const obs = Date.parse(String(gj.observed || "").replace(/\//g, "-"));
+  state.riverStale = !Number.isFinite(obs) || Date.now() - obs > 3 * 86400000;
   const ds = new Cesium.CustomDataSource("river");
   const icons = new Map();
   for (const f of gj.features) {
     const p = f.properties;
-    const col = stageColor(p.stage);
+    const col = state.riverStale ? STAGE_NONE : stageColor(p.stage);
     if (!icons.has(col)) icons.set(col, pinCanvas(col, "水", "#1b1f24"));
     ds.entities.add({
       position: Cesium.Cartesian3.fromDegrees(f.geometry.coordinates[0], f.geometry.coordinates[1], 4),
@@ -459,9 +466,14 @@ function pointInRing(lon, lat, ring) {
   return inside;
 }
 
+// 土砂災害警戒区域のデータの範囲（scripts/build_data.py の BBOX、中・東・南・西区だけ）。
+const LANDSLIDE_BBOX = { west: 132.4, east: 132.52, south: 34.33, north: 34.43 };
 let landslideGeo = null;
+// true = in a zone, false = not in a zone, null = unknown (data not loaded or outside its coverage).
 async function inLandslideZone(lon, lat) {
-  if (landslideGeo === null) landslideGeo = (await loadJson("data/landslide.geojson")) || { features: [] };
+  if (lon < LANDSLIDE_BBOX.west || lon > LANDSLIDE_BBOX.east || lat < LANDSLIDE_BBOX.south || lat > LANDSLIDE_BBOX.north) return null;
+  if (landslideGeo === null) landslideGeo = await loadJson("data/landslide.geojson"); // a failed load is retried next time
+  if (!landslideGeo) return null;
   for (const f of landslideGeo.features) {
     const g = f.geometry;
     const polys = g.type === "Polygon" ? [g.coordinates] : g.type === "MultiPolygon" ? g.coordinates : [];
@@ -502,8 +514,14 @@ function mapCenter() {
   return cartoAt(new Cesium.Cartesian2(c.clientWidth / 2, c.clientHeight / 2)) || { ...START };
 }
 
+function areaReady(hz) {
+  return state.areaStatus[hz] === "ok" && state.layers.area && state.areas[hz].every((ts) => ts.tilesLoaded);
+}
+
 function select(lon, lat, building, area, origin = "selected") {
-  state.selection = { lon, lat, building, area, origin };
+  const hz = state.hazard;
+  // areaHz / areaOk: which hazard the area pick was made for, and whether an empty pick then meant "no flooding".
+  state.selection = { lon, lat, building, area, origin, areaHz: hz, areaOk: hz !== "landslide" && areaReady(hz) };
   state.riverSel = null;
   render();
 }
@@ -577,19 +595,37 @@ function drawRoutes(sel, shelters) {
   scene.requestRender();
 }
 
+// After a hazard switch (or once the area tiles have loaded) pick the hazard area again at the selected spot.
+function refreshAreaPick(sel, hz) {
+  if (hz === "landslide" || (sel.areaHz === hz && sel.areaOk)) return;
+  sel.area = null;
+  sel.areaHz = hz;
+  sel.areaOk = false;
+  if (!areaReady(hz)) return;
+  scene.render();
+  const win = Cesium.SceneTransforms.worldToWindowCoordinates(scene, Cesium.Cartesian3.fromDegrees(sel.lon, sel.lat, 2));
+  const c = scene.canvas;
+  if (!win || win.x < 0 || win.y < 0 || win.x > c.clientWidth || win.y > c.clientHeight) return; // off screen: unknown
+  sel.area = pickAt(win).area;
+  sel.areaOk = true;
+}
+
 // Water depth for the selection: { rank, depth, duration, known }.
 function depthAt(sel, hz) {
   if (sel.building) {
     const r = buildingRisk(sel.building, hz);
     if (r.known) return { rank: rankFromDepth(r.depth), depth: r.depth, duration: r.duration, known: true };
   }
-  if (sel.area) return { rank: Math.min(num(sel.area.getProperty("uro:rank_code")) || 0, 6), depth: null, duration: null, known: true };
-  // Nothing picked: "no flooding" only if the hazard area layer is loaded and shown; otherwise unknown.
-  const areaOk = state.areaStatus[hz] === "ok" && state.layers.area;
-  return { rank: 0, depth: null, duration: null, known: areaOk };
+  if (sel.area && sel.areaHz === hz) return { rank: Math.min(num(sel.area.getProperty("uro:rank_code")) || 0, 6), depth: null, duration: null, known: true };
+  // Nothing picked: "no flooding" only if, at pick time, every area tileset of this hazard was loaded,
+  // shown and drawn, and the spot is inside the app's area. Otherwise unknown.
+  const known = sel.areaHz === hz && sel.areaOk && inBounds(sel.lon, sel.lat);
+  return { rank: 0, depth: null, duration: null, known };
 }
 
+let renderSeq = 0;
 async function render() {
+  const seq = ++renderSeq;
   const box = document.getElementById("result");
   const hint = document.getElementById("hint");
   if (state.riverSel) {
@@ -615,14 +651,25 @@ async function render() {
   let d = { rank: 0, depth: null, duration: null, known: false };
   let fl = { floors: null };
   if (sel.building) fl = floorsOf(sel.building);
-  if (hz !== "landslide") d = depthAt(sel, hz);
+  if (hz !== "landslide") {
+    refreshAreaPick(sel, hz);
+    d = depthAt(sel, hz);
+  }
 
-  const landslide = hz === "landslide"
-    ? (sel.building && buildingRisk(sel.building, "landslide").landslide) || (await inLandslideZone(sel.lon, sel.lat))
-    : false;
+  let landslide = false;
+  if (hz === "landslide") {
+    landslide = (sel.building && buildingRisk(sel.building, "landslide").landslide) || (await inLandslideZone(sel.lon, sel.lat));
+    if (seq !== renderSeq) return; // a newer render started while the zones were loading
+  }
 
   if (hz === "landslide") {
-    parts.push(landslide ? `<p class="warn">${esc(t("landslideWarn"))}</p>` : `<p class="depth none">${esc(t("landslideNone"))}</p>`);
+    parts.push(
+      landslide
+        ? `<p class="warn">${esc(t("landslideWarn"))}</p>`
+        : landslide === null
+          ? `<p class="depth unknown">${esc(t("landslideUnknown"))}</p>`
+          : `<p class="depth none">${esc(t("landslideNone"))}</p>`
+    );
   } else {
     parts.push(`<p class="note">${esc(t("depthLabel"))}</p>`);
     if (!d.known) {
@@ -722,11 +769,13 @@ function riverHtml(p) {
   ];
   if (p.level !== undefined) {
     parts.push(`<p class="depth"><span class="swatch" style="background:${stageColor(p.stage)};width:18px;height:18px"></span> ${esc(st)}</p>`);
-    parts.push(`<p>${esc(t("riverLevel", { v: fmtLevel(p.level), t: [p.date, p.time].filter(Boolean).join(" ") }))}</p>`);
+    const when = [p.date, p.time].filter(Boolean).join(" ");
+    parts.push(`<p>${esc(t("riverLevel", { v: fmtLevel(p.level), t: when || "?" }))}</p>`);
     if (p.max !== undefined) parts.push(`<p class="note">${esc(t("riverMax", { v: fmtLevel(p.max), t: p.max_time || "" }))}</p>`);
   } else parts.push(`<p class="note">${esc(t("riverNoData"))}</p>`);
   parts.push(`<p class="note">${esc(thList ? t("riverThresholds", { list: thList }) : t("riverNoThreshold"))}</p>`);
   parts.push(`<p class="advice">${esc(t("riverDaily", { d: p.date || state.river?.observed || "?" }))}</p>`);
+  if (state.riverStale) parts.push(`<p class="warn">${esc(t("riverStale"))}</p>`);
   parts.push(`<p><a href="${RIVER_LIVE_URL}" target="_blank" rel="noopener">${esc(t("riverLive"))}</a></p>`);
   return parts.join("");
 }
@@ -745,7 +794,8 @@ function selectAfterLoad(lon, lat, origin) {
   let tries = 0;
   const attempt = () => {
     tries++;
-    const ready = state.buildings.every((ts) => ts.tilesLoaded);
+    const hz = state.hazard;
+    const ready = state.buildings.every((ts) => ts.tilesLoaded) && (hz === "landslide" || state.areas[hz].every((ts) => ts.tilesLoaded));
     if (!ready && tries < 40) {
       scene.requestRender();
       setTimeout(attempt, 250);
@@ -777,6 +827,7 @@ function nearMe() {
     goTo(c.lon, c.lat, "center");
   };
   if (!navigator.geolocation) return fromCenter(t("geoDenied"));
+  toast(t("locating"), 4000);
   navigator.geolocation.getCurrentPosition(
     (p) => {
       const { longitude: lon, latitude: lat } = p.coords;
@@ -853,7 +904,7 @@ async function setHazard(h) {
   state.hazard = h;
   translate();
   if (h !== "landslide") await loadAreas(h);
-  if (h !== "landslide" && state.areaStatus[h] === "failed") toast(t("hazardLoadFailed"));
+  if (h !== "landslide" && (state.areaStatus[h] === "failed" || state.areaStatus[h] === "partial")) toast(t("hazardLoadFailed"));
   applyStyles();
   render();
 }
@@ -891,6 +942,7 @@ function legendHtml() {
   );
   if (!state.river) rows.push(`<li class="note">${esc(t("riverNoData"))}</li>`);
   else if (state.river.observed) rows.push(`<li class="note">${esc(t("riverDaily", { d: state.river.observed }))}</li>`);
+  if (state.river && state.riverStale) rows.push(`<li class="note warn-text">${esc(t("riverStale"))}</li>`);
   return `<ul class="legend-list">${rows.join("")}</ul>`;
 }
 

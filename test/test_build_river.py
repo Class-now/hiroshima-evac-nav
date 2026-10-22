@@ -65,6 +65,30 @@ class TestParse(unittest.TestCase):
             self.assertEqual(d["T001"]["max"], 2.1, name)
             self.assertEqual(d["T002"]["level"], 0.3, name)
 
+    def test_parse_when(self):
+        self.assertEqual(br.parse_when("2026/10/9 23:00"), ("2026-10-09", "23:00"))
+        self.assertEqual(br.parse_when("2026-10-21"), ("2026-10-21", ""))
+        self.assertEqual(br.parse_when("2026年10月9日 9時"), ("2026-10-09", "09:00"))
+        self.assertEqual(br.parse_when("20261009"), ("2026-10-09", ""))
+
+    def test_unpadded_dates_sort_by_time(self):
+        d = br.parse_daily("観測日時,観測所コード,水位\n2026/10/9 23:00,A,1.0\n2026/10/10 1:00,A,2.0\n2026/10/10 9:00,A,3.0\n2026/10/10 10:00,A,0.5\n")
+        self.assertEqual((d["A"]["date"], d["A"]["time"], d["A"]["level"]), ("2026-10-10", "10:00", 0.5))
+        self.assertEqual((d["A"]["max"], d["A"]["max_time"]), (3.0, "09:00"))
+
+    def test_column_choice(self):
+        h = ["観測所コード", "最高水位(m)", "最高水位時刻", "水位(m)", "氾濫危険水位(m)"]
+        self.assertEqual(h[br.find_col(h, "level")], "水位(m)")
+        self.assertEqual(h[br.find_col(h, "max")], "最高水位(m)")
+        self.assertEqual(h[br.find_col(h, "maxtime")], "最高水位時刻")
+        self.assertIsNone(br.find_col(["観測所コード", "最高水位", "最低水位"], "level"))
+        self.assertEqual(br.find_col(["河川コード", "観測所CD", "観測所コード"], "code"), 2)
+        h = ["緯度（日本測地系）", "緯度（世界測地系）"]
+        self.assertEqual(h[br.find_col(h, "lat")], "緯度（世界測地系）")
+
+    def test_unicode_minus(self):
+        self.assertEqual(br.to_float("−0.52"), -0.52)
+
     def test_missing_column_is_an_error(self):
         with self.assertRaises(KeyError):
             br.parse_daily("日付,値\n2026/10/21,1\n")
@@ -76,7 +100,7 @@ class TestParse(unittest.TestCase):
         p = gj["features"][0]["properties"]
         self.assertEqual((p["stage"], p["stage_max"]), (0, 2))
         self.assertIsNone(gj["features"][1]["properties"]["stage"])
-        self.assertEqual(gj["observed"], "2026/10/21")
+        self.assertEqual(gj["observed"], "2026-10-21")
 
 
 if __name__ == "__main__":

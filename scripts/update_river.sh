@@ -13,5 +13,5 @@ if git diff --quiet -- data/river.json && git ls-files --error-unmatch data/rive
   echo "no change"; exit 0
 fi
 git add data/river.json
-git commit -m "河川水位を更新（DoboX 水位日集計）"
+git commit -m "河川水位を更新（DoboX 水位日集計）" -- data/river.json
 [ "${1:-}" = "--no-push" ] || git push

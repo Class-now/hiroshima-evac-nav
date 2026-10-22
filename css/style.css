@@ -182,3 +182,4 @@ ol.shelters li > button { font-size: 15px; min-height: 32px; }
 @media (min-width: 641px) {
   #controls .row.hazards { display: grid; grid-template-columns: 1fr 1fr; }
 }
+.warn-text { color: var(--danger) !important; font-weight: 600; }

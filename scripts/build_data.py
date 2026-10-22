@@ -17,6 +17,7 @@ import json
 import math
 import re
 import struct
+import sys
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -327,7 +328,8 @@ def main():
     build_shelters(a.raw)
     build_stops(a.raw)
     build_landslide(a.raw)
-    # 避難場所名の英中韓（scripts/build_shelter_names.py）
+    # 避難場所名の英中韓（scripts/build_shelter_names.py）。-I ではスクリプトのフォルダが sys.path に無いので足す。
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
     import build_shelter_names
 
     build_shelter_names.main()

@@ -54,6 +54,16 @@ COLUMNS = {
     "max": ["日最高水位", "最高水位", "最大水位", "日最大水位"],
     "maxtime": ["最高水位時刻", "最高水位発生時刻", "最大水位時刻", "最高時刻"],
 }
+# 部分一致で探すとき、この語を含む列は候補にしない（「水位」で「最高水位」「氾濫危険水位」を拾わないように）。
+EXCLUDE = {
+    "code": ["河川", "水系", "事務所"],
+    "name": ["河川", "水系", "事務所", "よみ", "カナ", "かな", "英"],
+    "lat": ["日本測地"],
+    "lon": ["日本測地"],
+    "level": ["最高", "最大", "最低", "最小", "危険", "注意", "待機", "判断", "通報", "警戒", "計画", "基準", "時刻", "時間", "標高", "零点"],
+    "max": ["時刻", "時間", "発生"],
+    "date": ["更新", "作成", "登録"],
+}
 THRESHOLDS = ["standby", "caution", "evacuate", "danger"]
 HOUR_RE = re.compile(r"^(\d{1,2})(?:時|:00|：00|h)?$")
 
@@ -120,7 +130,8 @@ def read_csv(text: str):
 
 
 def norm(s):
-    return re.sub(r"[\s　()（）\[\]［］]|\(m\)|（m）|ｍ|m$", "", str(s)).lower()
+    s = re.sub(r"[(（\[［]\s*(?:m|ｍ|cm|ｃｍ|t\.p\.?m?|度)\s*[)）\]］]", "", str(s), flags=re.I)  # 単位を先に取る
+    return re.sub(r"[\s　()（）\[\]［］]", "", s).lower()
 
 
 def find_col(header, key, required=False):
@@ -129,10 +140,13 @@ def find_col(header, key, required=False):
     for c in cands:
         if c in names:
             return names.index(c)
+    excl = [norm(x) for x in EXCLUDE.get(key, [])]
     for c in cands:
-        for i, n in enumerate(names):
-            if c and c in n:
-                return i
+        hits = [i for i, n in enumerate(names) if c and c in n and not any(x in n for x in excl)]
+        if hits:
+            # 緯度経度が測地系ごとにあれば世界測地系を選ぶ
+            world = [i for i in hits if "世界" in names[i] or "jgd" in names[i] or "wgs" in names[i]]
+            return (world or hits)[0]
     if required:
         raise KeyError(f"列 {key}（候補: {COLUMNS[key]}）が見つかりません。列名: {header}")
     return None
@@ -142,7 +156,7 @@ def to_float(v):
     if v is None:
         return None
     s = str(v).strip().replace(",", "")
-    s = s.translate(str.maketrans("０１２３４５６７８９．－", "0123456789.-"))
+    s = s.translate(str.maketrans("０１２３４５６７８９．－−‐", "0123456789.---"))
     # 欠測・未観測の記号（"-", "欠測", "*" など）は None。
     if not re.fullmatch(r"-?\d+(\.\d+)?", s):
         return None
@@ -182,6 +196,8 @@ def parse_stations(text: str):
             continue
         if lat > lon:  # 緯度経度の取り違え
             lat, lon = lon, lat
+        if not g("code"):
+            continue
         st = {"code": g("code"), "name": g("name"), "river": g("river"), "lon": round(lon, 6), "lat": round(lat, 6)}
         th = {k: to_float(g(k)) for k in THRESHOLDS}
         th = {k: v for k, v in th.items() if v is not None}
@@ -189,6 +205,17 @@ def parse_stations(text: str):
             st["thresholds"] = th
         out[st["code"]] = st
     return out
+
+
+def parse_when(s):
+    """「2026/10/9 23:00」「2026-10-09」「2026年10月9日 9時」「20261009」→ ("2026-10-09", "23:00" または "")。"""
+    s = str(s).strip()
+    m = re.match(r"(\d{4})\D?(\d{1,2})\D?(\d{1,2})日?[\sT]*(?:(\d{1,2})[:時：](\d{2})?)?", s)
+    if not m:
+        return s, ""
+    y, mo, d, hh, mm = m.groups()
+    date = f"{int(y):04d}-{int(mo):02d}-{int(d):02d}"
+    return date, (f"{int(hh):02d}:{int(mm or 0):02d}" if hh else "")
 
 
 def hour_columns(header):
@@ -217,12 +244,15 @@ def parse_daily(text: str):
     i_max = find_col(header, "max")
     i_maxt = find_col(header, "maxtime")
     out = {}
+    peaks = {}  # 縦持ち: code -> (最高値, その時刻)
     for r in rows:
         if i_code >= len(r) or not r[i_code].strip():
             continue
         code = r[i_code].strip()
-        date = r[i_date].strip() if i_date is not None and i_date < len(r) else ""
+        date, time = parse_when(r[i_date]) if i_date is not None and i_date < len(r) else ("", "")
         rec = {"date": date}
+        if time:
+            rec["time"] = time
         if hours:
             vals = [(h, to_float(r[i])) for h, i in hours if i < len(r)]
             vals = [(h, v) for h, v in vals if v is not None]
@@ -243,12 +273,18 @@ def parse_daily(text: str):
                 rec["max_time"] = r[i_maxt].strip()
         prev = out.get(code)
         if not hours:
-            # 縦持ちでは行の順が時刻順とは限らないので、最高値は全行から取る。
-            peak = max(x for x in (rec.get("max"), rec["level"], prev and prev.get("max")) if x is not None)
+            # 縦持ちでは行の順が時刻順とは限らないので、最高値とその時刻は全行から取る。
+            cand = (rec.get("max", rec["level"]), rec.get("max_time") if "max" in rec else rec.get("time", ""))
+            if code not in peaks or cand[0] > peaks[code][0]:
+                peaks[code] = cand
         if prev is None or (rec["date"], rec.get("time", "")) >= (prev["date"], prev.get("time", "")):
             out[code] = rec
-        if not hours:
-            out[code]["max"] = peak
+    for code, (v, tm) in peaks.items():
+        out[code]["max"] = v
+        if tm:
+            out[code]["max_time"] = tm
+        else:
+            out[code].pop("max_time", None)
     return out
 
 
@@ -333,6 +369,15 @@ def main():
     if not gj["features"]:
         sys.exit("範囲内の水位観測所が 0 件。列の対応を --inspect で確認してください")
     with_obs = sum(1 for f in gj["features"] if "level" in f["properties"])
+    # 中身が同じなら書き換えない（generated の時刻だけでコミットが毎日できないように）。
+    if a.out.exists():
+        try:
+            old = json.loads(a.out.read_text(encoding="utf-8"))
+            if {k: v for k, v in old.items() if k != "generated"} == {k: v for k, v in gj.items() if k != "generated"}:
+                print(f"{a.out.name}: no change (observed {gj['observed']})")
+                return
+        except ValueError:
+            pass
     a.out.write_text(json.dumps(gj, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(f"{a.out.name}: {len(gj['features'])} stations ({with_obs} with water level), observed {gj['observed']}")
 

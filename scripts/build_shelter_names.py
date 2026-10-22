@@ -124,19 +124,24 @@ def romaji_word(word):
             pass
         else:
             r = syl_roma(s)
-            # 長音: おう・おお → o、うう → u（ヘボン式の長音記号は付けない）
-            if s in ("う", "お") and out[-1:] == "o":
+            # 長音: おう → o、うう → u、おお → o（ヘボン式の長音記号は付けない）。
+            # ほお のように前の音節が お 段の別の字なら残す（仁保大町 にほおおまち → Nihoomachi）。
+            if s == "う" and out[-1:] in ("o", "u"):
                 r = ""
-            elif s == "う" and out[-1:] == "u":
+            elif s == "お" and i > 0 and syl[i - 1] == "お":
                 r = ""
+            # ん の後に母音・y が来るときは n' と書く（観音 Kan'on）
+            if out.endswith("n") and syl[i - 1] == "ん" and r[:1] in ("a", "i", "u", "e", "o", "y"):
+                out += "'"
             out += r
         i += 1
     return out
 
 
 def romaji(kana):
+    """スペース・中黒は語の区切り。| は語の中の切れ目（長音をまたいでまとめない。大浦 おお|うら → Oura）。"""
     words = [w for w in re.split(r"[\s・]+", kana) if w]
-    return " ".join(romaji_word(w).capitalize() for w in words)
+    return " ".join("".join(romaji_word(p) for p in w.split("|")).capitalize() for w in words)
 
 
 # ---- 仮名 → ハングル（外来語表記法「日本語の仮名と한글 대조표」） -------------------------------
@@ -181,6 +186,7 @@ def _add_final(ch, t):
 def hangul_word(word):
     out = []
     prev_vowel = ""
+    prev = ""
     for s in kana_syllables(word):
         if s in ("ん", "っ"):
             if out:
@@ -188,9 +194,11 @@ def hangul_word(word):
             continue
         if s == "ー" or s not in _HG:
             continue
-        # 長音は書かない: おう・おお → 오、うう → 우
-        if (s in ("う", "お") and prev_vowel == "o") or (s == "う" and prev_vowel == "u"):
+        # 長音は書かない: おう → 오、うう → 우、語頭の おお → 오（romaji_word と同じ規則）
+        if (s == "う" and prev_vowel in ("o", "u")) or (s == "お" and prev == "お"):
+            prev = s
             continue
+        prev = s
         h = _HG[s]
         out.append(h[0] if not out or len(h) == 1 else h[1])
         prev_vowel = syl_roma(s)[-1:]
@@ -198,7 +206,7 @@ def hangul_word(word):
 
 
 def hangul(kana):
-    return " ".join(hangul_word(w) for w in re.split(r"[\s・]+", kana) if w)
+    return " ".join("".join(hangul_word(p) for p in w.split("|")) for w in re.split(r"[\s・]+", kana) if w)
 
 
 # ---- 名前の組み立て ------------------------------------------------------------------------
@@ -266,7 +274,7 @@ def has_katakana(s):
 
 def names_for(name, m, cat=None):
     """manual の 1 件から {name_en, name_zh, name_ko, name_kana, names_src} を作る。作れないものは入れない。"""
-    out = {"name_kana": (m["kana"] + "").replace(" ", "")}
+    out = {"name_kana": m["kana"].replace(" ", "").replace("|", "")}
     stem, typ, prefix = m["stem"], m.get("type_ja", ""), m.get("prefix_ja", "")
     t = TYPES.get(typ)
     pre = PREFIX.get(prefix)

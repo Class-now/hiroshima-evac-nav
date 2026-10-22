@@ -76,6 +76,7 @@ export function walkMinutes(distance) {
 
 // 距離の表示（1 km 未満は 10 m 単位、それ以上は 0.1 km 単位）。
 export function formatDistance(distance) {
-  if (distance < 1000) return `${Math.max(10, Math.round(distance / 10) * 10)} m`;
+  const m = Math.max(10, Math.round(distance / 10) * 10);
+  if (m < 1000) return `${m} m`;
   return `${(distance / 1000).toFixed(1)} km`;
 }

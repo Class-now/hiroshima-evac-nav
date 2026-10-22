@@ -17,6 +17,7 @@ class TestKana(unittest.TestCase):
             "なかじま": "Nakajima", "とうじょう": "Tojo", "おおしば": "Oshiba", "ちゅうおう": "Chuo",
             "てっぽうちょう": "Teppocho", "しののめ": "Shinonome", "ふないり": "Funairi", "みっちゃん": "Mitchan",
             "きょうばし": "Kyobashi", "ほんかわ ひろせ": "Honkawa Hirose",
+            "かんおん": "Kan'on", "さんよう": "San'yo", "にほおおまち": "Nihoomachi", "おお|うら": "Oura",
         }
         for k, v in cases.items():
             self.assertEqual(bn.romaji(k), v, k)
@@ -25,6 +26,7 @@ class TestKana(unittest.TestCase):
         cases = {
             "なかじま": "나카지마", "とうじょう": "도조", "こうご": "고고", "かんおん": "간온",
             "てっぽうちょう": "뎃포초", "つるみ": "쓰루미", "きょうばし": "교바시", "うじな": "우지나",
+            "にほおおまち": "니호오마치", "おおしば": "오시바",
         }
         for k, v in cases.items():
             self.assertEqual(bn.hangul(k), v, k)

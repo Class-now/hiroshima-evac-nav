@@ -135,7 +135,7 @@
 | 67 | 仁保保育園 | にほ | high | Niho Nursery School | 仁保保育园 | 니호 보육원 | romaji |  | | |
 | 68 | 仁保児童館 | にほ | high | Niho Children's Center | 仁保儿童馆 | 니호 아동관 | romaji |  | | |
 | 69 | 仁保公民館 | にほ | high | Niho Community Center | 仁保公民馆 | 니호 공민관 | romaji |  | | |
-| 70 | 仁保大町集会所 | にほおおまち | high | Nihomachi Assembly Hall | 仁保大町集会所 | 니호마치 집회소 | romaji |  | | |
+| 70 | 仁保大町集会所 | にほおおまち | high | Nihoomachi Assembly Hall | 仁保大町集会所 | 니호오마치 집회소 | romaji |  | | |
 | 71 | 仁保小学校 | にほ | high | Niho Elementary School | 仁保小学 | 니호 초등학교 | romaji |  | | |
 | 72 | 仁保新町保育園 | にほしんまち | high | Niho-shinmachi Nursery School | 仁保新町保育园 | 니호신마치 보육원 | romaji |  | | |
 | 73 | 仁保新町集会所 | にほしんまち | high | Niho-shinmachi Assembly Hall | 仁保新町集会所 | 니호신마치 집회소 | romaji |  | | |
@@ -170,11 +170,11 @@
 | 102 | 南千田西集会所 | みなみせんだにし | high | Minami-senda-nishi Assembly Hall | 南千田西集会所 | 미나미센다니시 집회소 | romaji |  | | |
 | 103 | 南吉島集会所 | みなみよしじま | high | Minami-yoshijima Assembly Hall | 南吉岛集会所 | 미나미요시지마 집회소 | romaji |  | | |
 | 104 | 南蟹屋集会所 | みなみかにや | high | Minami-kaniya Assembly Hall | 南蟹屋集会所 | 미나미카니야 집회소 | romaji |  | | |
-| 105 | 南観音会館（第一会館） | みなみかんおん | high | Minami-kanon Hall | 南观音会馆 | 미나미칸온 회관 | romaji |  | | |
-| 106 | 南観音児童館 | みなみかんおん | high | Minami-kanon Children's Center | 南观音儿童馆 | 미나미칸온 아동관 | romaji |  | | |
-| 107 | 南観音公民館 | みなみかんおん | high | Minami-kanon Community Center | 南观音公民馆 | 미나미칸온 공민관 | romaji |  | | |
-| 108 | 南観音小学校 | みなみかんおん | high | Minami-kanon Elementary School | 南观音小学 | 미나미칸온 초등학교 | romaji |  | | |
-| 109 | 南観音集会所 | みなみかんおん | high | Minami-kanon Assembly Hall | 南观音集会所 | 미나미칸온 집회소 | romaji |  | | |
+| 105 | 南観音会館（第一会館） | みなみかんおん | high | Minami-kan'on Hall | 南观音会馆 | 미나미칸온 회관 | romaji |  | | |
+| 106 | 南観音児童館 | みなみかんおん | high | Minami-kan'on Children's Center | 南观音儿童馆 | 미나미칸온 아동관 | romaji |  | | |
+| 107 | 南観音公民館 | みなみかんおん | high | Minami-kan'on Community Center | 南观音公民馆 | 미나미칸온 공민관 | romaji |  | | |
+| 108 | 南観音小学校 | みなみかんおん | high | Minami-kan'on Elementary School | 南观音小学 | 미나미칸온 초등학교 | romaji |  | | |
+| 109 | 南観音集会所 | みなみかんおん | high | Minami-kan'on Assembly Hall | 南观音集会所 | 미나미칸온 집회소 | romaji |  | | |
 | 110 | 古江集会所 | ふるえ | high | Furue Assembly Hall | 古江集会所 | 후루에 집회소 | romaji |  | | |
 | 111 | 古田中学校 | ふるた | high | Furuta Junior High School | 古田初中 | 후루타 중학교 | romaji |  | | |
 | 112 | 古田保育園 | ふるた | high | Furuta Nursery School | 古田保育园 | 후루타 보육원 | romaji |  | | |
@@ -246,7 +246,7 @@
 | 178 | 尾長集会所 | おなが | high | Onaga Assembly Hall | 尾长集会所 | 오나가 집회소 | romaji |  | | |
 | 179 | 山手集会所 | やまて | high | Yamate Assembly Hall | 山手集会所 | 야마테 집회소 | romaji |  | | |
 | 180 | 山根町東集会所 | やまねちょうひがし | high | Yamanecho-higashi Assembly Hall | 山根町东集会所 | 야마네초히가시 집회소 | romaji |  | | |
-| 181 | 山陽高等学校 | さんよう | high | Sanyo High School | 山阳高中 | 산요 고등학교 | romaji |  | | |
+| 181 | 山陽高等学校 | さんよう | high | San'yo High School | 山阳高中 | 산요 고등학교 | romaji |  | | |
 | 182 | 崇徳高等学校 | そうとく | high | Sotoku High School | 崇德高中 | 소토쿠 고등학교 | romaji |  | | |
 | 183 | 工業技術センター | こうぎょうぎじゅつせんたー | high | Industrial technology research center (Hiroshima City) |  |  | type_hint | 固有名詞部分なし。全体を翻訳扱いで可。 | | |
 | 184 | 己斐上中学校 | こいうえ | high | Koiue Junior High School | 己斐上初中 | 고이우에 중학교 | romaji |  | | |
@@ -318,7 +318,7 @@
 | 250 | 文化交流会館（広島文化学園HBGホール） | ぶんかこうりゅうかいかん | high | Cultural exchange hall (concert hall) |  |  | type_hint | 正式名 広島市文化交流会館。括弧内はネーミングライツ（Hiroshima Bunka Gakuen HBG Hall）。 | | |
 | 251 | 文化交流会館（広島文化学園ＨＢＧホール） | ぶんかこうりゅうかいかん | high | Cultural exchange hall (concert hall) |  |  | type_hint | 正式名 広島市文化交流会館。括弧内はネーミングライツ。全角 ＨＢＧ 版。 | | |
 | 252 | 新庄集会所 | しんじょう | high | Shinjo Assembly Hall | 新庄集会所 | 신조 집회소 | romaji |  | | |
-| 253 | 新牛田公園 | しんうした | high | Shinushita Park | 新牛田公园 | 신우시타 공원 | romaji |  | | |
+| 253 | 新牛田公園 | しんうした | high | Shin'ushita Park | 新牛田公园 | 신우시타 공원 | romaji |  | | |
 | 254 | 日宇那集会所（日宇那会館） | ひうな | high | Hiuna Assembly Hall | 日宇那集会所 | 히우나 집회소 | romaji |  | | |
 | 255 | 旧広島市民球場跡地イベント広場（ひろしまゲートパークプラザ） | きゅうひろしましみんきゅうじょうあとち | high | Kyuhiroshimashiminkyujoatochi Event Plaza | 旧广岛市民球场迹地活动广场 | 규히로시마시민큐조아토치 이벤트 광장 | romaji | 「旧…跡地」は説明語。愛称 ひろしまゲートパークプラザ を使う方が自然かもしれない。 | | |
 | 256 | 早稲田中学校 | わせだ | high | Waseda Junior High School | 早稻田初中 | 와세다 중학교 | romaji |  | | |
@@ -333,7 +333,7 @@
 | 265 | 本川保育園 | ほんかわ | high | Honkawa Nursery School | 本川保育园 | 혼카와 보육원 | romaji |  | | |
 | 266 | 本川児童館 | ほんかわ | high | Honkawa Children's Center | 本川儿童馆 | 혼카와 아동관 | romaji |  | | |
 | 267 | 本川小学校 | ほんかわ | high | Honkawa Elementary School | 本川小学 | 혼카와 초등학교 | romaji |  | | |
-| 268 | 本浦集会所（本浦会館） | ほんうら | high | Honura Assembly Hall | 本浦集会所 | 혼라 집회소 | romaji |  | | |
+| 268 | 本浦集会所（本浦会館） | ほんうら | high | Hon'ura Assembly Hall | 本浦集会所 | 혼라 집회소 | romaji |  | | |
 | 269 | 東区スポーツセンター（マエダハウジング東区スポーツセンター） | ひがしく | high | Higashi-ku Sports Center | 东区体育中心 | 히가시구 스포츠 센터 | romaji | 括弧内はネーミングライツ。 | | |
 | 270 | 東区図書館 | ひがしく | high | Higashi-ku Library | 东区图书馆 | 히가시구 도서관 | romaji |  | | |
 | 271 | 東区民文化センター | ひがしく | high | Higashi-ku Cultural Center | 东区民文化中心 | 히가시구 문화 센터 | romaji | type_ja「区民文化センター」と stem の「区」が重複。 | | |
@@ -420,7 +420,7 @@
 | 352 | 県立広島工業高等学校 | ひろしま | high | Prefectural Hiroshima Technical High School | 县立广岛工业高中 | 현립 히로시마 공업고등학교 | romaji | 正式名は 広島県立広島工業高等学校。 | | |
 | 353 | 県立広島皆実高等学校 | ひろしまみなみ | high | Prefectural Hiroshima Minami High School | 县立广岛皆实高中 | 현립 히로시마미나미 고등학교 | romaji |  | | |
 | 354 | 県立広島皆実高等学校・県立広島工業高等学校 | ひろしまみなみ | high | Prefectural Hiroshima Minami High School | 县立广岛皆实高中 | 현립 히로시마미나미 고등학교 | romaji | 複数施設（県立広島皆実高校＋県立広島工業高校）。stem は先頭施設のみ。分割して表示する方がよい。 | | |
-| 355 | 県立広島観音高等学校 | ひろしまかんおん | high | Prefectural Hiroshima Kanon High School | 县立广岛观音高中 | 현립 히로시마칸온 고등학교 | romaji |  | | |
+| 355 | 県立広島観音高等学校 | ひろしまかんおん | high | Prefectural Hiroshima Kan'on High School | 县立广岛观音高中 | 현립 히로시마칸온 고등학교 | romaji |  | | |
 | 356 | 県総合グランド | けん | high | Ken Sports Ground | 县综合运动场 | 겐 종합 운동장 | romaji | 「広島県総合グランド」の略。固有名詞部分は 県 のみで、実質的に全体を翻訳扱いが妥当。 | | |
 | 357 | 矢賀児童館 | やが | high | Yaga Children's Center | 矢贺儿童馆 | 야가 아동관 | romaji |  | | |
 | 358 | 矢賀小学校 | やが | high | Yaga Elementary School | 矢贺小学 | 야가 초등학교 | romaji |  | | |
@@ -478,13 +478,13 @@
 | 410 | 西部埋立第八公園 | せいぶうめたて | high | Seibumetate Park No. 8 | 西部埋立第八公园 | 세이부메타테 제8 공원 | romaji |  | | |
 | 411 | 西部埋立第六公園 | せいぶうめたて | high | Seibumetate Park No. 6 | 西部埋立第六公园 | 세이부메타테 제6 공원 | romaji |  | | |
 | 412 | 西霞町集会所 | にしかすみちょう | high | Nishi-kasumicho Assembly Hall | 西霞町集会所 | 니시카스미초 집회소 | romaji |  | | |
-| 413 | 観音中学校 | かんおん | high | Kanon Junior High School | 观音初中 | 간온 중학교 | romaji |  | | |
-| 414 | 観音会館 | かんおん | high | Kanon Hall | 观音会馆 | 간온 회관 | romaji |  | | |
-| 415 | 観音児童館 | かんおん | high | Kanon Children's Center | 观音儿童馆 | 간온 아동관 | romaji |  | | |
-| 416 | 観音公民館 | かんおん | high | Kanon Community Center | 观音公民馆 | 간온 공민관 | romaji |  | | |
-| 417 | 観音小学校 | かんおん | high | Kanon Elementary School | 观音小学 | 간온 초등학교 | romaji |  | | |
-| 418 | 観音新町会館 | かんおんしんまち | high | Kanon-shinmachi Hall | 观音新町会馆 | 간온신마치 회관 | romaji |  | | |
-| 419 | 観音本町集会所 | かんおんほんまち | high | Kanon-honmachi Assembly Hall | 观音本町集会所 | 간온혼마치 집회소 | romaji |  | | |
+| 413 | 観音中学校 | かんおん | high | Kan'on Junior High School | 观音初中 | 간온 중학교 | romaji |  | | |
+| 414 | 観音会館 | かんおん | high | Kan'on Hall | 观音会馆 | 간온 회관 | romaji |  | | |
+| 415 | 観音児童館 | かんおん | high | Kan'on Children's Center | 观音儿童馆 | 간온 아동관 | romaji |  | | |
+| 416 | 観音公民館 | かんおん | high | Kan'on Community Center | 观音公民馆 | 간온 공민관 | romaji |  | | |
+| 417 | 観音小学校 | かんおん | high | Kan'on Elementary School | 观音小学 | 간온 초등학교 | romaji |  | | |
+| 418 | 観音新町会館 | かんおんしんまち | high | Kan'on-shinmachi Hall | 观音新町会馆 | 간온신마치 회관 | romaji |  | | |
+| 419 | 観音本町集会所 | かんおんほんまち | high | Kan'on-honmachi Assembly Hall | 观音本町集会所 | 간온혼마치 집회소 | romaji |  | | |
 | 420 | 金輪島集会所 | かなわじま | high | Kanawajima Assembly Hall | 金轮岛集会所 | 가나와지마 집회소 | romaji |  | | |
 | 421 | 鈴が丘集会所 | すずがおか | high | Suzugaoka Assembly Hall |  | 스즈가오카 집회소 | romaji |  | | |
 | 422 | 鈴が台会館 | すずがだい | high | Suzugadai Hall |  | 스즈가다이 회관 | romaji |  | | |

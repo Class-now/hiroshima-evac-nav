@@ -96,4 +96,5 @@ test("walkMinutes / formatDistance", () => {
   assert.equal(formatDistance(3), "10 m");
   assert.equal(formatDistance(456), "460 m");
   assert.equal(formatDistance(1234), "1.2 km");
+  assert.equal(formatDistance(995), "1.0 km");
 });
