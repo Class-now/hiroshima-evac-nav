@@ -6,6 +6,10 @@
   "scripts": {
     "test": "node --test \"test/**/*.test.mjs\"",
     "smoke": "node scripts/smoke.mjs",
-    "serve": "python3 -m http.server 8000"
+    "serve": "python3 -m http.server 8000",
+    "pitch:capture": "node scripts/pitch/capture.mjs",
+    "pitch:video": "node scripts/pitch/video.mjs",
+    "pitch:pdf": "node scripts/pitch/pdf.mjs",
+    "pitch": "node scripts/pitch/capture.mjs && node scripts/pitch/pdf.mjs && node scripts/pitch/video.mjs"
   }
 }

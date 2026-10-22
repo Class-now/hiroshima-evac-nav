@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>広島 3D 多言語避難ナビ — PLATEAU AWARD 2026</title>
+<!--
+  PLATEAU AWARD 2026 一般部門の説明スライド（16:9、1280×720px / ページ）。
+  構成は docs/pitch/plateau-slides.md。PDF は node scripts/pitch/pdf.mjs で docs/pitch/out/plateau-slides.pdf に出る。
+  画像は ../out/screens/（node scripts/pitch/capture.mjs で撮り直せる）。
+  【本人】と書いた箇所は本人が埋める。数字・実績・体験談は作らない。
+-->
+<style>
+  @page { size: 1280px 720px; margin: 0; }
+  :root {
+    --ink: #1b2430; --sub: #5a6675; --line: #d7dee6; --bg: #ffffff; --blue: #0b5cad; --navy: #0b2540;
+    --green: #2e8b57; --red: #c8463d; --brown: #d9a35b; --me: #b3261e; --me-bg: #fdecea;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #888; }
+  body { font-family: "IPAPGothic", "IPAGothic", "WenQuanYi Zen Hei", sans-serif; color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .slide { position: relative; width: 1280px; height: 720px; background: var(--bg); overflow: hidden; page-break-after: always; break-after: page; padding: 48px 64px 40px; margin: 0 auto 16px; }
+  @media print { .slide { margin: 0; } html, body { background: none; } }
+  h1 { font-size: 40px; margin: 0 0 6px; line-height: 1.25; }
+  h2 { font-size: 34px; margin: 0 0 22px; line-height: 1.3; }
+  h2 small { display: block; font-size: 18px; font-weight: normal; color: var(--sub); margin-top: 6px; }
+  p, li { font-size: 21px; line-height: 1.55; }
+  ul { margin: 0; padding-left: 1.2em; }
+  li { margin: 0 0 8px; }
+  .no { position: absolute; right: 28px; bottom: 18px; font-size: 14px; color: var(--sub); }
+  .crit { position: absolute; right: 64px; top: 30px; display: flex; gap: 6px; }
+  .crit span { font-size: 14px; border: 1.5px solid var(--blue); color: var(--blue); border-radius: 99px; padding: 3px 12px; background: #fff; }
+  .row { display: flex; gap: 28px; align-items: flex-start; }
+  .col { flex: 1; min-width: 0; }
+  .shot { position: relative; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #e6ebef; }
+  .shot img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .shot.zoom img { position: absolute; left: 0; bottom: 0; width: 330%; height: auto; object-fit: initial; }
+  .shot .cap { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(11,37,64,.82); color: #fff; font-size: 15px; padding: 6px 10px; }
+  .draft { position: absolute; right: 8px; top: 8px; background: rgba(255,255,255,.92); color: var(--me); border: 1px solid var(--me); font-size: 12px; padding: 2px 8px; border-radius: 4px; }
+  .me { color: var(--me); background: var(--me-bg); border-radius: 4px; padding: 0 6px; font-weight: bold; }
+  .big { font-size: 28px; font-weight: bold; line-height: 1.45; }
+  .note { font-size: 15px; color: var(--sub); }
+  .pill { display: inline-block; font-size: 16px; padding: 3px 12px; border-radius: 99px; background: #eef3f8; margin: 0 6px 6px 0; }
+  .num { font-size: 44px; font-weight: bold; color: var(--blue); line-height: 1.1; }
+  .stat { border-left: 4px solid var(--blue); padding: 2px 0 2px 14px; margin-bottom: 14px; }
+  .stat .lbl { font-size: 16px; color: var(--sub); }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; padding: 9px 10px; font-size: 17px; line-height: 1.45; }
+  th { background: #f2f5f8; font-size: 16px; }
+  .flow { display: flex; align-items: center; gap: 10px; }
+  .box { border: 2px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 17px; line-height: 1.4; background: #fff; }
+  .box b { display: block; font-size: 18px; }
+  .box.dobox { border-color: var(--brown); }
+  .box.plateau { border-color: var(--blue); }
+  .arrow { font-size: 28px; color: var(--sub); }
+  /* title */
+  .title { padding: 0; color: #fff; background: var(--navy); }
+  .title .bg { position: absolute; inset: 0; background-size: cover; background-position: center; filter: brightness(.3) blur(1px); }
+  .title .c { position: absolute; left: 72px; right: 72px; top: 150px; }
+  .title h1 { font-size: 62px; }
+  .title .en { font-size: 26px; opacity: .9; margin-bottom: 28px; }
+  .title .lead { font-size: 26px; line-height: 1.6; }
+  .title .meta { position: absolute; left: 72px; bottom: 48px; font-size: 18px; }
+  .title .qr { position: absolute; right: 64px; bottom: 44px; width: 150px; background: #fff; padding: 8px; border-radius: 8px; }
+  .title .qr img { width: 100%; display: block; }
+  .title .tags span { display: inline-block; background: rgba(11,92,173,.9); padding: 5px 14px; border-radius: 6px; margin-right: 8px; font-size: 18px; }
+</style>
+</head>
+<body>
+
+<!-- 1. タイトル -->
+<section class="slide title">
+  <div class="bg" style="background-image:url('../out/screens/peace-depth-ja.png')"></div>
+  <div class="c">
+    <div class="tags"><span>PLATEAU 広島市 2024</span><span>DoboX</span><span>4 言語</span></div>
+    <h1 style="margin-top:22px">広島 3D 多言語避難ナビ</h1>
+    <div class="en">Hiroshima 3D Evacuation Map</div>
+    <p class="lead">建物をタップすると「水がどこまで来るか」と「何階より上へ逃げるか」を、<br>やさしい日本語・English・简体中文・한국어 で示す Web アプリ</p>
+  </div>
+  <div class="meta">https://class-now.github.io/hiroshima-evac-nav/<br>作者: <span class="me" style="background:#fff">【本人】</span>　PLATEAU AWARD 2026 一般部門</div>
+  <div class="qr"><img src="img/qr.svg" alt="公開 URL の QR コード"></div>
+</section>
+
+<!-- 2. 課題 -->
+<section class="slide">
+  <div class="crit"><span>アイデア</span></div>
+  <h2>課題 — ハザードマップは「平面」で「日本語」</h2>
+  <div class="row">
+    <div class="col">
+      <p class="big">平面の地図でわかるのは「この地点が何 m 浸かるか」まで。<br>「この建物の何階なら安全か」は、自分で考えるしかない。</p>
+      <ul style="margin-top:24px">
+        <li>土地勘のない人ほど、建物の高さや近くの避難場所を知らない</li>
+        <li>案内が日本語だけだと、旅行者・留学生・外国人住民に届きにくい</li>
+        <li>広島市中心部の外国人来訪・居住の状況: <span class="me">【本人】公的統計を出典つきで。無ければ削除</span></li>
+        <li>着想のきっかけ: <span class="me">【本人】体験・動機を 1〜2 文</span></li>
+      </ul>
+    </div>
+    <div class="col" style="flex:.8">
+      <div class="stat"><div class="lbl">問い</div><div class="big">「今いる建物で、どう動けばいい？」</div></div>
+      <div class="stat" style="border-color:var(--green)"><div class="lbl">この作品の答え</div><div class="big">建物ごとに「N 階より上へ」か<br>「避難場所へ」かを示す</div></div>
+      <div class="stat" style="border-color:var(--brown)"><div class="lbl">対象</div><div style="font-size:21px">広島市 中区・東区・南区・西区<br>洪水・高潮・津波・土砂災害</div></div>
+    </div>
+  </div>
+  <div class="no">2</div>
+</section>
+
+<!-- 3. 答え -->
+<section class="slide">
+  <div class="crit"><span>3D 都市モデルの活用</span><span>アイデア</span></div>
+  <h2>答え — 建物をタップすると「何階より上へ」</h2>
+  <div class="row">
+    <div class="col" style="flex:1.6">
+      <div class="shot" style="height:440px"><img src="../out/screens/peace-depth-ja.png" alt=""><span class="draft">暫定画面（3D 建物なし）【本人】差し替え</span><div class="cap">平和記念公園付近（?spot=peace）。左下の結果シートに水の深さ・避難場所が出る</div></div>
+    </div>
+    <div class="col">
+      <ul>
+        <li>建物の属性から<b>浸水深</b>（想定最大規模 L2 の最大値）・<b>浸水継続時間</b>・<b>地上階数</b>を読む</li>
+        <li>浸水深から「安全な階」を出し、建物の階数と比べて<b>「N 階より上へ」</b>か<b>「避難場所へ」</b>かを示す</li>
+        <li>階数の属性が無い建物は計測高さ ÷ 3.3 m で推定し、<b>推定であることを明示</b></li>
+        <li>データが読めないときは「浸水しない」と言わず<b>「わかりません」</b></li>
+      </ul>
+    </div>
+  </div>
+  <div class="no">3</div>
+</section>
+
+<!-- 4. 街全体 -->
+<section class="slide">
+  <div class="crit"><span>3D 都市モデルの活用</span><span>UI/UX/デザイン</span></div>
+  <h2>3D 都市モデルで「街全体」を一目で<small>建物の色分けを 2 つのモードで切り替え</small></h2>
+  <div class="row">
+    <div class="col">
+      <div class="shot" style="height:300px"><img src="../out/screens/peace-depth-ja.png" alt=""><span class="draft">暫定画面【本人】差し替え</span><div class="cap">浸水深の色（水害ハザードマップ作成の手引きの凡例色）</div></div>
+    </div>
+    <div class="col">
+      <div class="shot" style="height:300px"><img src="../out/screens/peace-refuge-ja.png" alt=""><span class="draft">暫定画面【本人】差し替え</span><div class="cap">上の階へ逃げられる建物（緑）／避難場所へ（赤）</div></div>
+    </div>
+  </div>
+  <ul style="margin-top:22px">
+    <li>建物ごとに「浸水深に対して階数が足りるか」を判定して塗り分ける — 平面図では表せない<b>高さ</b>の情報を PLATEAU の建物属性から直接引き出す</li>
+    <li>中区は LOD2、南・東・西区は LOD1 の建物を PLATEAU の配信から直接ストリーミング</li>
+  </ul>
+  <div class="no">4</div>
+</section>
+
+<!-- 5. 災害の種類 -->
+<section class="slide">
+  <div class="crit"><span>3D 都市モデルの活用</span><span>実用性</span></div>
+  <h2>災害の種類ごとに切り替え<small>避難場所も「その災害に使える場所」だけから選ぶ</small></h2>
+  <div class="row" style="gap:16px">
+    <div class="col"><div class="shot" style="height:200px"><img src="../out/screens/peace-depth-ja.png" alt=""><div class="cap">洪水（6 河川の L2 浸水想定区域）</div></div></div>
+    <div class="col"><div class="shot" style="height:200px"><img src="../out/screens/hazard-surge-ja.png" alt=""><div class="cap">高潮（PLATEAU）</div></div></div>
+    <div class="col"><div class="shot" style="height:200px"><img src="../out/screens/hazard-tsunami-ja.png" alt=""><div class="cap">津波（PLATEAU）</div></div></div>
+    <div class="col"><div class="shot" style="height:200px"><img src="../out/screens/landslide-castle-en.png" alt=""><div class="cap">土砂（DoboX 警戒区域）</div></div></div>
+  </div>
+  <p class="note" style="margin:6px 0 14px">画面は暫定（浸水想定区域・建物・背景地図なし）。<span class="me">【本人】3D ありで撮り直して差し替え</span></p>
+  <ul>
+    <li><b>洪水</b>: 太田川・元安川・天満川・旧太田川・京橋川・猿猴川の 6 河川の L2 浸水想定区域　<b>高潮・津波</b>: PLATEAU の浸水想定区域</li>
+    <li><b>土砂</b>: DoboX の土砂災害警戒区域 <b>843 区域</b>（中・東・南・西区）。範囲外・読み込み失敗は「わかりません」</li>
+    <li>最寄りの避難場所は、<b>避難場所 442 か所</b>のうち選んだ災害に使える場所だけから近い順に 3 件（方角・直線距離・徒歩の目安）</li>
+  </ul>
+  <div class="no">5</div>
+</section>
+
+<!-- 6. 4 言語 -->
+<section class="slide">
+  <div class="crit"><span>UI/UX/デザイン</span><span>アイデア</span></div>
+  <h2>4 言語 ＋ やさしい日本語<small>同じ地点の結果を 4 言語で（URL の ?lang= で直接開ける）</small></h2>
+  <div class="row" style="gap:14px">
+    <div class="col"><div class="shot zoom" style="height:290px"><img src="../out/screens/peace-depth-ja.png" alt=""><div class="cap">やさしい にほんご</div></div></div>
+    <div class="col"><div class="shot zoom" style="height:290px"><img src="../out/screens/peace-depth-en.png" alt=""><div class="cap">English</div></div></div>
+    <div class="col"><div class="shot zoom" style="height:290px"><img src="../out/screens/peace-depth-zh.png" alt=""><div class="cap">简体中文</div></div></div>
+    <div class="col"><div class="shot zoom" style="height:290px"><img src="../out/screens/peace-depth-ko.png" alt=""><div class="cap">한국어</div></div></div>
+  </div>
+  <ul style="margin-top:20px">
+    <li>避難場所名は<b>機械翻訳しない</b>: ローマ字・ハングル・簡体字の字形 ＋ 施設の種類（例: 中島小学校 → Nakajima Elementary School）。<b>日本語名をいつも併記</b>し、現地の看板と照合できる</li>
+    <li>路面電車の電停名は事業者の公開データ（GTFS）の訳を優先、無いものは作者が作成</li>
+    <li>訳語の確認: <span class="me">【本人】確認した範囲・協力者（了承を得た上で）</span></li>
+  </ul>
+  <div class="no">6</div>
+</section>
+
+<!-- 7. 河川水位 -->
+<section class="slide">
+  <div class="crit"><span>アイデア</span><span>実用性</span></div>
+  <h2>「今」の川 — DoboX の河川水位を重ねる<small>想定（PLATEAU）に、観測（DoboX）を重ねる</small></h2>
+  <div class="row">
+    <div class="col" style="flex:1.5">
+      <div class="shot" style="height:420px"><img src="../out/screens/river-ja.png" alt=""><span class="draft">暫定画面（背景地図なし）</span><div class="cap">三篠橋(国)（旧太田川）をタップ: 最新の水位と基準水位、当日の最高</div></div>
+    </div>
+    <div class="col">
+      <div class="stat"><div class="num">37</div><div class="lbl">観測所（中心部の周辺。値あり 36）</div></div>
+      <ul>
+        <li>DoboX の「観測所一覧」「水位日集計」CSV を<b>毎日取り込み</b></li>
+        <li>水防団待機・氾濫注意・避難判断・氾濫危険の基準水位と比べて 0〜4 段階で色分け</li>
+        <li>日集計なので<b>「リアルタイムではない」と画面に明記</b>し、県の河川防災情報システムへリンク。3 日より古いと灰色＋注意</li>
+      </ul>
+      <p class="note">画面の値は data/river.json（2026-10-22 の日集計）</p>
+    </div>
+  </div>
+  <div class="no">7</div>
+</section>
+
+<!-- 8. UI -->
+<section class="slide">
+  <div class="crit"><span>UI/UX/デザイン</span><span>実用性</span></div>
+  <h2>迷わせない UI — スマホで、初めてでも</h2>
+  <div class="row" style="gap:22px">
+    <div class="shot" style="width:200px;height:433px;flex:none"><img src="../out/screens/mobile-onboarding-ja.png" alt=""><div class="cap">初回の使い方</div></div>
+    <div class="shot" style="width:200px;height:433px;flex:none"><img src="../out/screens/mobile-result-ja.png" style="object-position:50% 100%" alt=""><div class="cap">結果シート</div></div>
+    <div class="shot" style="width:200px;height:433px;flex:none"><img src="../out/screens/mobile-layers-ja.png" style="object-position:50% 0%" alt=""><div class="cap">レイヤーと凡例</div></div>
+    <div class="col">
+      <ul>
+        <li>初回だけ<b>使い方と言語選択</b>（右上「?」で再表示）</li>
+        <li>スマホ幅 375px で操作が完結。操作パネルは上、結果は下。タップ領域 36〜44px</li>
+        <li><b>凡例</b>と<b>レイヤー切替</b>（建物・浸水区域・土砂・河川水位・避難場所・電停）</li>
+        <li>「近くの避難場所」: 現在地 → 許可なし・範囲外なら地図の中心から</li>
+        <li>「これは予測です。広島市の情報に従ってください」を<b>常に表示</b></li>
+      </ul>
+    </div>
+  </div>
+  <div class="no">8</div>
+</section>
+
+<!-- 9. 技術 -->
+<section class="slide">
+  <div class="crit"><span>技術力</span></div>
+  <h2>技術 — ビルドなし・サーバーなし・外部 API なし</h2>
+  <div class="flow" style="margin-bottom:22px">
+    <div class="col">
+      <div class="box plateau"><b>PLATEAU 配信（3D Tiles）</b>建物 LOD2/LOD1、洪水 L2 ×6・高潮・津波</div>
+      <div class="box" style="margin-top:8px"><b>地理院タイル</b>淡色地図</div>
+      <div class="box dobox" style="margin-top:8px"><b>data/*.geojson・river.json（同梱）</b>DoboX・国土地理院・国土数値情報を Python（標準ライブラリだけ）で変換</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="col" style="flex:.9">
+      <div class="box"><b>CesiumJS（CDN、ビルドなし）</b>Cesium ion 不使用。ジオイド高（33.4 m）でタイルを地面に合わせる</div>
+      <div class="box" style="margin-top:8px"><b>ブラウザ内で計算</b>建物の判定・最寄り 3 件・方角・距離</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="col" style="flex:.6">
+      <div class="box"><b>GitHub Pages</b>URL だけで使える</div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <ul>
+        <li>元サーバーに CORS が無いデータは事前に GeoJSON 化して同梱</li>
+        <li>DoboX は国外から接続できないため、河川水位は国内のマシンで毎日取り込み → コミット → 公開ページに反映</li>
+      </ul>
+    </div>
+    <div class="col">
+      <ul>
+        <li>単体テスト（案内ロジック・4 言語の全キー・河川 CSV の取り込み）を GitHub Actions で</li>
+        <li>Playwright のスモークテスト 14 シナリオ（4 言語・4 地点・375px・現在地・災害切替・河川水位・初回案内）</li>
+      </ul>
+    </div>
+  </div>
+  <div class="no">9</div>
+</section>
+
+<!-- 10. 限界と次 -->
+<section class="slide">
+  <div class="crit"><span>実用性</span></div>
+  <h2>限界と次の一歩</h2>
+  <div class="row">
+    <div class="col">
+      <h3 style="font-size:24px;margin:0 0 12px">できないこと（画面にも明記）</h3>
+      <ul>
+        <li>浸水深は想定最大規模の<b>予測値</b>。避難の判断は広島市の発表に従う</li>
+        <li>避難場所までは<b>直線距離</b>。道路の通行可否は考えていない</li>
+        <li>河川水位は<b>日集計</b>。リアルタイムの警報の代わりにはならない</li>
+        <li>対象は広島市の<b>中・東・南・西区</b></li>
+        <li>避難場所名の訳は作者による表記（確認中のものあり）</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3 style="font-size:24px;margin:0 0 12px">次の一歩</h3>
+      <p><span class="me">【本人】本人が決めた次の一歩（例: 訳語の監修の拡大、対象区の拡大）</span></p>
+    </div>
+  </div>
+  <div class="no">10</div>
+</section>
+
+<!-- 11. 審査基準への対応 -->
+<section class="slide">
+  <h2>審査基準への対応</h2>
+  <table>
+    <tr><th style="width:190px">審査基準</th><th style="width:110px">スライド</th><th>この作品で示すこと</th></tr>
+    <tr><td><b>3D 都市モデルの活用</b></td><td>3・4・5</td><td>建物の属性（浸水深・浸水継続時間・地上階数・計測高さ）で建物ごとに判定・着色。洪水 L2 ×6 河川・高潮・津波の浸水想定区域を重ねる</td></tr>
+    <tr><td><b>アイデア</b></td><td>2・3・7</td><td>「この建物の何階より上へ」という建物単位の行動の案内。想定（PLATEAU）と観測（DoboX 河川水位）の重ね合わせ</td></tr>
+    <tr><td><b>UI/UX/デザイン</b></td><td>4・6・8</td><td>やさしい日本語を含む 4 言語、施設名を機械翻訳しない表記、手引き準拠の凡例色、初回案内、スマホ 375px</td></tr>
+    <tr><td><b>技術力</b></td><td>9</td><td>ビルドなしの CesiumJS で PLATEAU 配信を直接表示、ジオイド補正、CORS の無いデータの事前変換、国外から読めない DoboX の毎日取り込み、自動テスト</td></tr>
+    <tr><td><b>実用性</b></td><td>5・7・8・10</td><td>災害に使える避難場所だけから最寄り 3 件（外部 API なし）、URL だけで使える、「わかりません」と限界の明示</td></tr>
+  </table>
+  <div class="no">11</div>
+</section>
+
+<!-- 12. まとめ -->
+<section class="slide">
+  <h2>まとめ — 建物をタップ → 何階より上へ、を 4 言語で</h2>
+  <div class="row">
+    <div class="col">
+      <p class="big" style="margin-bottom:10px">https://class-now.github.io/hiroshima-evac-nav/</p>
+      <p class="note" style="font-size:17px">?spot=peace（平和記念公園）・station（広島駅）・hondori（本通）・castle（広島城）、?lang=ja-easy / en / zh / ko</p>
+      <h3 style="font-size:20px;margin:22px 0 8px">データ出典</h3>
+      <ul style="font-size:15px">
+        <li style="font-size:15px">3D 都市モデル（建築物、洪水・高潮・津波浸水想定区域）: 国土交通省 Project PLATEAU（広島市 2024 年度）</li>
+        <li style="font-size:15px">避難所情報・土砂災害警戒区域・河川水位（観測所一覧／水位日集計）: 出典：広島県インフラマネジメント基盤（DoboX）（CC BY 4.0）。加工して作成</li>
+        <li style="font-size:15px">指定緊急避難場所: 国土地理院「指定緊急避難場所データ」を加工して作成</li>
+        <li style="font-size:15px">路面電車の停留場: 国土数値情報（鉄道データ）（国土交通省、CC BY 4.0）。停留場名の訳: 広島電鉄 GTFS-JP（広島県バス協会、CC0）と作者による訳</li>
+        <li style="font-size:15px">背景地図: 地理院タイル（淡色地図）　3D 表示: CesiumJS（Apache-2.0）</li>
+      </ul>
+    </div>
+    <div style="width:220px;flex:none;text-align:center">
+      <img src="img/qr.svg" style="width:200px;border:1px solid var(--line);padding:8px;border-radius:8px" alt="QR">
+      <p class="note">公開 URL</p>
+    </div>
+  </div>
+  <div class="no">12</div>
+</section>
+
+</body>
+</html>

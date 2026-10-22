@@ -3,3 +3,4 @@ scripts/_cache/
 __pycache__/
 node_modules/
 test-results/
+docs/pitch/out/_work/
