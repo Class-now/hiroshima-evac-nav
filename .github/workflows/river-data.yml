@@ -14,6 +14,9 @@ permissions:
 concurrency:
   group: river-data
   cancel-in-progress: false
+defaults:
+  run:
+    shell: bash # Windows のセルフホストランナーでも同じ書き方で動くように（既定は pwsh）
 jobs:
   build:
     if: vars.RIVER_RUNNER != ''
