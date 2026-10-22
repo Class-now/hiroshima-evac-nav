@@ -18,7 +18,7 @@
 
 ## 2026-10-22〜23（ブランチ mvp-1101、PR #1）
 - **DoboX 河川水位**: `scripts/build_river.py`（標準ライブラリだけ）で「観測情報_観測所一覧」「観測情報_水位日集計」→ `data/river.json`。基準水位と比べて 0〜4 段階、地図に「水」マーカー、タップで最新・当日最高・基準水位。日集計でリアルタイムではないと明記し、県の河川防災情報システムへリンク。3 日より古いデータは灰色＋注意。
-  - **DoboX は日本国外からのアクセスを 403 で拒否**（GitHub の ubuntu-latest、作業したクラウド環境の両方で確認）。CSV の実物の列名は未確認なので、列名の候補で探して合わなければ止まる作り（`--inspect`）。`data/river.json` はまだ無い（作り物は入れない）。
+  - **DoboX は日本国外からのアクセスを 403 で拒否**（GitHub の ubuntu-latest、作業したクラウド環境の両方で確認）。10/22 に本人の PC（国内）から実データを取得し、CSV の形に合わせて取り込みを直して `data/river.json`（37 か所、10/22 21:20 の値）を入れた（`docs/river-data.md`）。
   - 毎日の更新: `scripts/update_river.sh`（手元の PC で cron）か、`.github/workflows/river-data.yml`（リポジトリ変数 `RIVER_RUNNER` に国内セルフホストランナーを設定したときだけ動く）。手順は `docs/river-data.md`。
 - **最寄りの避難場所**: `js/guide.js`（純粋関数、`test/guide.test.mjs`）。災害種別に対応した避難場所を距離順に 3 件、8 方位・直線距離・徒歩の目安・「N 階以上」。「近くの避難場所」ボタンは現在地 → 許可なし／範囲外は地図の中心。
 - **避難場所名の多言語化**: 機械翻訳しない。`scripts/shelter_names_manual.json`（固有名の部分と読み。AI 補助の案）→ `scripts/build_shelter_names.py` でローマ字（ヘボン式）・ハングル（外来語表記法）・簡体字の字形＋施設種別の訳。日本語名をいつも併記。確認表 `docs/translation-review-shelters.md`（conf=low 12 件）、UI 文言 `docs/translation-review-ui.md`。
@@ -30,7 +30,7 @@
 - この作業環境からは PLATEAU・地理院タイル・CDN・DoboX に接続できず、3D 建物が出た状態の画面は確認できていない（ローカルの Cesium と `--offline` で UI だけ確認）。
 
 ## 次にやること
-1. **本人**: 手元の PC で `python3 -I scripts/build_river.py --raw /tmp/river --fetch --inspect` → 列名が拾えているか確認（拾えなければ `COLUMNS` に追記）→ `data/river.json` を作ってコミット。毎日の更新方法（cron か国内ランナー）を PM と決める。DoboX の河川水位データの利用条件（ライセンス表示）をデータセットのページで確認。
+1. ~~**本人**: 河川水位の列名確認と `data/river.json` 作成~~ → **済（10/22、本人の PC〈国内〉から取得）**。実データの形に合わせて `build_river.py` を直した: 観測所一覧はヘッダー 3 行（3 行目が列名。データ種別 4 = 水位、観測所番号は所管ごとに重複するので「事務所/所管/番号」をキーに）、水位日集計は観測所が列に並ぶ横持ちで 10 分ごとの値（`**`・`--`・`CC` は欠測など）。最新のリソースは古い順に 10 件ずつのページの最後のページにある（1 ページ目だけ見て 2024-03-14 を選んでいた）。当日のファイルは当日中も更新される（10/22 21:29 に 21:20 まで）。`data/river.json` は範囲内 37 か所（値あり 36）、10/22 21:20 の値。利用条件はデータセットのページに個別の記載なし、DoboX 利用規約で CC BY 4.0・出典「広島県インフラマネジメント基盤」（アプリの出典表示はこれに合う）。詳細は `docs/river-data.md`。**残り**: 毎日の更新方法（cron か国内ランナー）を PM と決める。
 2. **本人**: 訳語の確認（`docs/translation-review-shelters.md` の conf=low 12 件と施設種別、`docs/translation-review-ui.md` の新しい文言）。直したら `python3 -I scripts/build_shelter_names.py`。
 3. 普通のネット環境で `npm run smoke` と目視（3D 建物ありで建物タップ → 浸水深・階数、スマホ実機で位置情報）。
 4. PM が PR #1 をレビューしてマージ → GitHub Pages で確認。

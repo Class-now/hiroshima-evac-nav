@@ -3,14 +3,15 @@
 ## 単体テスト（依存なし）
 
 ```bash
-npm test                                             # node:test: js/guide.js（最寄りの避難場所）と i18n の欠け
+npm test                                             # node:test: js/guide.js（最寄りの避難場所）・i18n の欠け・data/river.json の形
 python3 -m unittest discover -s test -p "test_*.py"  # scripts/build_river.py と scripts/build_shelter_names.py
 ```
 
 GitHub Actions の `test` ワークフローが push・PR ごとに両方を回す。
 
 - `test/i18n.test.mjs`: 4 言語で全キーがそろっているか、空でないか、`{変数}` が英語と同じか、コードで使っているキーが辞書にあるか。
-- `test/fixtures/river_*.csv` は **架空のデータ**（DoboX の実物の列名は未確認なので、列名の揺れに耐えるかを見るだけ）。
+- `test/fixtures/dobox_*` は DoboX の実データの抜粋（観測所一覧・水位日集計・データセットのページ）。`test/river-data.test.mjs` は、入っている `data/river.json` が `js/app.js` の読む形か（位置・名前・水位・時刻・段階）を確かめる。
+- `test/fixtures/river_sample.json` は架空の観測所データ（スモーク用）。
 
 ## スモークテスト（Playwright、headless Chromium）
 
