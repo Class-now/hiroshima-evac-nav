@@ -218,15 +218,15 @@ async function boot(p, url, { result = false, flyTo = null } = {}) {
       });
     }, flyTo);
   }
-  // 録画中は毎フレーム描く（requestRenderMode だと動画が止まって見えることがある）。
-  await p.evaluate(() => (window.__app.viewer.scene.requestRenderMode = false));
+  // 録画中は描き続ける（requestRenderMode だと止まって見える）。SwiftShader では重いので 0.2 秒ごとに要求する。
+  await p.evaluate(() => setInterval(() => window.__app.viewer.scene.requestRender(), 200));
   if (!opt.offline) await waitTiles(p, 90000);
   await cosmetics(p);
   // 通知（オフラインの「3D を読めない」）が録画中に出たら隠す。
   if (opt.offline)
     await p.evaluate(() => {
       const t = document.getElementById("toast");
-      new MutationObserver(() => (t.hidden = true)).observe(t, { attributes: true, childList: true });
+      new MutationObserver(() => { if (!t.hidden) t.hidden = true; }).observe(t, { attributes: true, childList: true });
       t.hidden = true;
     });
 }
@@ -277,7 +277,9 @@ async function recordCut(browser, base, cut) {
   const ctx = await newContext(browser, base, opt, { ...(cut.ctx || {}), scale: 1, size, video: { dir, size } });
   const page = await ctx.newPage();
   const t0 = Date.now();
+  console.log(`  ${cut.id} 準備中`);
   await cut.setup(page, base);
+  console.log(`  ${cut.id} 操作中`);
   const start = (Date.now() - t0) / 1000;
   await cut.run(page);
   const used = (Date.now() - t0) / 1000 - start;

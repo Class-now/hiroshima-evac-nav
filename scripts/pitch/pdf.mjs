@@ -6,7 +6,7 @@
 //
 // 出力: docs/pitch/out/plateau-slides.pdf（16:9）、docs/pitch/out/dobox-poster.pdf（A4 縦）と
 //       確認用の PNG（docs/pitch/out/preview/）。
-// PDF を軽くするため、../out/screens/*.png は幅 1600px の JPEG に縮めて読み込ませる（ffmpeg を使う）。
+// スライドは PDF を軽くするため、../out/screens/*.png を幅 1600px の JPEG に縮めて読み込ませる（ffmpeg を使う）。
 
 import fs from "node:fs";
 import path from "node:path";
@@ -19,8 +19,8 @@ const WORK = path.join(OUT, "_work", "jpg");
 const PREVIEW = path.join(OUT, "preview");
 
 const DOCS = {
-  slides: { html: "slides.html", pdf: "plateau-slides.pdf", viewport: { width: 1280, height: 720 }, pdfOpt: { width: "1280px", height: "720px" } },
-  poster: { html: "poster.html", pdf: "dobox-poster.pdf", viewport: { width: 794, height: 1123 }, pdfOpt: { format: "A4" } },
+  slides: { html: "slides.html", pdf: "plateau-slides.pdf", viewport: { width: 1280, height: 720 }, pdfOpt: { width: "1280px", height: "720px" }, jpeg: true },
+  poster: { html: "poster.html", pdf: "dobox-poster.pdf", viewport: { width: 794, height: 1123 }, pdfOpt: { format: "A4" }, jpeg: false },
 };
 
 function jpegFor(png) {
@@ -47,7 +47,8 @@ async function main() {
       continue;
     }
     const ctx = await browser.newContext({ viewport: d.viewport, deviceScaleFactor: 1 });
-    await ctx.route(/\/out\/screens\/[^/]+\.png$/, (route) => {
+    // ポスターは原寸の px で切り抜いているので縮めない。
+    if (d.jpeg) await ctx.route(/\/out\/screens\/[^/]+\.png$/, (route) => {
       const png = path.join(OUT, "screens", path.basename(new URL(route.request().url()).pathname));
       if (!fs.existsSync(png)) return route.continue();
       return route.fulfill({ status: 200, contentType: "image/jpeg", body: fs.readFileSync(jpegFor(png)) });
