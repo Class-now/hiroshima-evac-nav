@@ -165,7 +165,7 @@ export async function renderNow(page) {
 }
 
 // アプリの起動（#loading が消える）を待つ。
-export async function waitBoot(page, timeout = 90000) {
+export async function waitBoot(page, timeout = 240000) {
   await page.waitForFunction(() => window.__app?.viewer, null, { timeout });
   await page.waitForFunction(() => {
     const l = document.getElementById("loading");

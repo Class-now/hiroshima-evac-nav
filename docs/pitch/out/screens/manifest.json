@@ -1,24 +1,14 @@
 {
-  "taken": "2026-10-22T13:22:37.886Z",
-  "mode": "offline",
+  "taken": "2026-11-08T22:21:17.867Z",
+  "mode": "network",
   "base": "local",
-  "note": "PLATEAU 3D Tiles・地理院タイルに接続できない環境で撮影。建物と背景地図は写っていない（暫定）。",
-  "river_observed": "2026-10-22",
+  "note": "",
+  "river_observed": "2026-11-08",
   "scenes": [
-    {
-      "name": "overview",
-      "desc": "中区を引きで（浸水深の色）",
-      "file": "screens/overview.png"
-    },
     {
       "name": "peace-depth-ja",
       "desc": "平和記念公園付近・浸水深の色・建物の結果（やさしい日本語）",
       "file": "screens/peace-depth-ja.png"
-    },
-    {
-      "name": "peace-refuge-ja",
-      "desc": "上の階へ逃げられる建物（緑・赤）",
-      "file": "screens/peace-refuge-ja.png"
     },
     {
       "name": "peace-depth-en",
@@ -39,11 +29,6 @@
       "name": "spot-station-ja",
       "desc": "?spot=station",
       "file": "screens/spot-station-ja.png"
-    },
-    {
-      "name": "spot-hondori-ja",
-      "desc": "?spot=hondori",
-      "file": "screens/spot-hondori-ja.png"
     },
     {
       "name": "spot-castle-ja",
@@ -71,6 +56,36 @@
       "file": "screens/landslide-castle-en.png"
     },
     {
+      "name": "sources-ja",
+      "desc": "データの出典ダイアログ",
+      "file": "screens/sources-ja.png"
+    },
+    {
+      "name": "mobile-result-en",
+      "desc": "スマホ 375px: 建物の結果（English）",
+      "file": "screens/mobile-result-en.png"
+    },
+    {
+      "name": "mobile-layers-ja",
+      "desc": "スマホ 375px: レイヤー切替と凡例",
+      "file": "screens/mobile-layers-ja.png"
+    },
+    {
+      "name": "overview",
+      "desc": "中区を引きで（浸水深の色）",
+      "file": "screens/overview.png"
+    },
+    {
+      "name": "peace-refuge-ja",
+      "desc": "上の階へ逃げられる建物（緑・赤）",
+      "file": "screens/peace-refuge-ja.png"
+    },
+    {
+      "name": "spot-hondori-ja",
+      "desc": "?spot=hondori",
+      "file": "screens/spot-hondori-ja.png"
+    },
+    {
       "name": "river-ja",
       "desc": "河川水位（DoboX、data/river.json の実データ）: 三篠橋(国)",
       "file": "screens/river-ja.png"
@@ -86,11 +101,6 @@
       "file": "screens/near-here-ja.png"
     },
     {
-      "name": "sources-ja",
-      "desc": "データの出典ダイアログ",
-      "file": "screens/sources-ja.png"
-    },
-    {
       "name": "mobile-onboarding-ja",
       "desc": "スマホ 375px: 初回の使い方",
       "file": "screens/mobile-onboarding-ja.png"
@@ -99,16 +109,6 @@
       "name": "mobile-result-ja",
       "desc": "スマホ 375px: 建物の結果",
       "file": "screens/mobile-result-ja.png"
-    },
-    {
-      "name": "mobile-result-en",
-      "desc": "スマホ 375px: 建物の結果（English）",
-      "file": "screens/mobile-result-en.png"
-    },
-    {
-      "name": "mobile-layers-ja",
-      "desc": "スマホ 375px: レイヤー切替と凡例",
-      "file": "screens/mobile-layers-ja.png"
     },
     {
       "name": "mobile-river-ja",
