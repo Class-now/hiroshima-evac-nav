@@ -26,7 +26,7 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; background: #fff; }
 body {
-  font-family: "IPAPGothic", "IPAGothic", "WenQuanYi Zen Hei", sans-serif;
+  font-family: "IPAPGothic", "IPAGothic", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
   color: var(--ink);
   font-size: 9pt;
   line-height: 1.26;
@@ -156,7 +156,7 @@ tr.dx td:first-child { border-left: 1mm solid var(--dobox); }
         <h3>河川水位 <span class="arrow">→</span> 今、川はどうか</h3>
         <p>観測所 <span class="num">37</span> か所の最新水位を<b>基準水位と比べて色分け</b>。毎日取り込む。</p>
         <div class="crop" style="--x:16;--y:1035;--w:848;--h:230"><img src="../out/screens/river-ja.png" alt="河川水位の表示"></div>
-        <p class="src">広島県 河川課（10/22 値あり 36 か所）</p>
+        <p class="src">広島県 河川課（毎日取り込み）</p>
       </div>
     </div>
   </section>
@@ -194,42 +194,30 @@ tr.dx td:first-child { border-left: 1mm solid var(--dobox); }
     </div>
   </section>
 
-  <!-- E. 4 言語 ＋ H. 限界・注意 -->
+  <!-- E. 課題・効果 ＋ H. 今後・限界 -->
   <div class="row-eh">
     <section class="box">
-      <h2>4 言語</h2>
-      <div class="langs">
-        <figure><div class="crop" style="--x:16;--y:958;--w:848;--h:300"><img src="../out/screens/peace-depth-ja.png" alt=""></div><figcaption>やさしい日本語</figcaption></figure>
-        <figure><div class="crop" style="--x:16;--y:958;--w:848;--h:300"><img src="../out/screens/peace-depth-en.png" alt=""></div><figcaption>English</figcaption></figure>
-        <figure><div class="crop" style="--x:16;--y:958;--w:848;--h:300"><img src="../out/screens/peace-depth-zh.png" alt=""></div><figcaption>简体中文</figcaption></figure>
-        <figure><div class="crop" style="--x:16;--y:958;--w:848;--h:300"><img src="../out/screens/peace-depth-ko.png" alt=""></div><figcaption>한국어</figcaption></figure>
-      </div>
-      <p style="margin-top:.6mm">避難場所名は機械翻訳せず、ローマ字＋施設の種類（例: Motomachi Elementary School）に日本語名を並べる。着想: 外国語を学ぶ中で、旅先でバスの並び方が分からない様子の訪日客を見て、災害のときこそ母語で、建物単位で示したいと考えた。</p>
+      <h2>解決したい課題と期待される効果</h2>
+      <ul>
+        <li><b>課題</b>: 平面のハザードマップでわかるのは「この地点が何 m 浸かるか」まで。「この建物の何階なら安全か」は自分で考えるしかなく、案内が日本語だけだと訪日客・外国人住民に届きにくい（広島市の外国人観光客は 2025 年 256 万 1 千人で過去最高、広島市「令和 7 年広島市入込観光客数」）。</li>
+        <li><b>効果</b>: 土地勘のない人でも、建物をタップするだけで「上の階へ」か「避難場所へ」かと、その災害で使える近い避難場所が 4 言語でわかる。DoboX の避難所・警戒区域・河川水位を、想定（PLATEAU）と観測の両面から一つの画面で使えるようにした。</li>
+        <li><b>着想</b>: 外国語を学ぶ中で、旅先でバスの並び方が分からない様子の訪日客を見て、災害のときこそ母語で、建物単位で示したいと考えた。避難場所名は機械翻訳せず、日本語名を必ず併記。</li>
+      </ul>
     </section>
     <section class="box">
-      <h2>限界・注意</h2>
+      <h2>今後の展望</h2>
+      <ul>
+        <li>訳語を各言語の話者に確認してもらう</li>
+        <li>広島市の残り 4 区へ拡大</li>
+        <li>道路を使った避難経路、DoboX のリアルタイム水位</li>
+      </ul>
+      <h3 style="margin-top:1mm">限界</h3>
       <ul>
         <li>浸水深は想定最大規模の予測値。避難は広島市の発表に従う</li>
-        <li>避難場所までの距離は直線距離</li>
-        <li>河川水位は 1 日 1 回の取り込みで、警報の代わりではない</li>
+        <li>距離は直線、河川水位は 1 日 1 回の取り込み（DoboX は国外から読めないため国内の PC で変換）</li>
       </ul>
     </section>
   </div>
-
-  <!-- F. データの流れ -->
-  <section class="dobox">
-    <h2>データの流れ（DoboX → アプリ）</h2>
-    <div class="flow">
-      <div class="n"><b>DoboX</b>避難所・警戒区域・河川水位</div>
-      <div class="ar"><svg viewBox="0 0 10 10"><path d="M1 5h6M5 2l3 3-3 3" fill="none" stroke="#0b6e4f" stroke-width="1.6"/></svg></div>
-      <div class="n"><b>Python で変換</b>河川水位は国内の PC で毎日</div>
-      <div class="ar"><svg viewBox="0 0 10 10"><path d="M1 5h6M5 2l3 3-3 3" fill="none" stroke="#0b6e4f" stroke-width="1.6"/></svg></div>
-      <div class="n"><b>GeoJSON・JSON を同梱</b>442 か所・843 区域・37 か所</div>
-      <div class="ar"><svg viewBox="0 0 10 10"><path d="M1 5h6M5 2l3 3-3 3" fill="none" stroke="#0b6e4f" stroke-width="1.6"/></svg></div>
-      <div class="n alt"><b>ブラウザで表示</b>最寄りも端末内で計算</div>
-    </div>
-    <p class="side">DoboX はブラウザから直接読めず（CORS なし）国外からも接続できないため事前に変換。<b>PLATEAU</b> の 3D Tiles は直接読む。</p>
-  </section>
 
   <!-- G. 使用データと出典 -->
   <section class="box">
@@ -246,7 +234,7 @@ tr.dx td:first-child { border-left: 1mm solid var(--dobox); }
         <tr><td>鉄道データ N02・GTFS-JP（停留場名）・CesiumJS</td><td>国交省・広島県バス協会 他</td><td>CC BY 4.0・CC0・Apache-2.0</td></tr>
       </tbody>
     </table>
-    <p class="credit">出典：広島県インフラマネジメント基盤（DoboX）（CC BY 4.0 https://creativecommons.org/licenses/by/4.0/deed.ja ）。避難所情報（広島県 危機管理課）、土砂災害警戒区域・特別警戒区域情報（広島県 砂防課）、観測情報_観測所一覧・観測情報_水位日集計（広島県 河川課）を加工して作成。※ 河川の 2 データはデータセットのページにライセンスの個別記載がなく、DoboX 利用規約（CC BY 4.0）による。</p>
+    <p class="credit">出典：広島県インフラマネジメント基盤（DoboX）（CC BY 4.0 https://creativecommons.org/licenses/by/4.0/deed.ja ）。避難所情報（広島県 危機管理課）、土砂災害警戒区域・特別警戒区域情報（広島県 砂防課）、観測情報_観測所一覧・観測情報_水位日集計（広島県 河川課）を加工して作成。※ 河川の 2 データは DoboX 利用規約（CC BY 4.0）による。</p>
   </section>
 
   <footer class="foot">
