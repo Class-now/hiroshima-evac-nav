@@ -43,6 +43,7 @@ const state = {
   landslide: null,
   shelters: [],
   stops: [],
+  bus: null,
   river: null, // GeoJSON FeatureCollection or null
   sheltersDs: null,
   stopsDs: null,
@@ -397,6 +398,49 @@ async function loadStops() {
   await viewer.dataSources.add(ds);
 }
 
+// 広電バスの停留所と平日の路線（scripts/build_bus.py、GTFS-JP）。避難場所の近くのバス停を出すのに使う。
+async function loadBus() {
+  state.bus = await loadJson("data/bus_stops.json");
+}
+
+const BUS_NEAR_M = 600; // 徒歩 9 分ほど。避難場所の 2/3 に届く（11-14 計測）
+function busStopsNear(lon, lat, n = 2) {
+  if (!state.bus) return [];
+  return state.bus.stops
+    .map((s) => ({ ...s, d: distanceM(lon, lat, s.lon, s.lat) }))
+    .filter((s) => s.d <= BUS_NEAR_M)
+    .sort((x, y) => x.d - y.d)
+    .slice(0, n);
+}
+
+function destLabel(d) {
+  const lang = getLang();
+  const tr = state.bus?.dest_names?.[d] || {};
+  if (lang === "ja-easy") return tr.name_kana || d;
+  return { en: tr.name_en, zh: tr.name_zh, ko: tr.name_ko }[lang] || d;
+}
+
+function busHtml(shelter) {
+  if (!state.bus || !shelter) return "";
+  const stops = busStopsNear(shelter.lon, shelter.lat);
+  const title = `<h3>${esc(t("busTitle", { s: placeLabel(shelter).main }))}</h3>`;
+  if (!stops.length) return title + `<p class="note">${esc(t("busNone"))}</p>`;
+  const body = stops
+    .map((s) => {
+      const routes = s.routes
+        .slice(0, 4)
+        .map(
+          (r) =>
+            `<li>${esc(t("busRoute", { no: r.no || r.line, to: r.to.map(destLabel).join(" / ") }))}` +
+            `<span class="note">${esc(t("busTimes", { first: r.first, last: r.last, n: r.n }))}</span></li>`
+        )
+        .join("");
+      return `<p>${placeHtml(s)} · ${esc(t("walk", { m: walkMinutes(s.d), km: (s.d / 1000).toFixed(2) }))}</p><ul class="bus">${routes}</ul>`;
+    })
+    .join("");
+  return title + body + `<p class="note">${esc(t("busNote"))}</p>`;
+}
+
 function stageColor(stage) {
   return stage === null || stage === undefined ? STAGE_NONE : STAGE_COLORS[stage];
 }
@@ -726,6 +770,8 @@ async function render() {
     parts.push(`<h3>${esc(t("tramTitle"))}</h3><p>${placeHtml(stop)} · ${esc(t("walk", { m: walkMinutes(stop.d), km: (stop.d / 1000).toFixed(2) }))}</p>`);
   }
 
+  if (shelters.length) parts.push(busHtml(shelters[0]));
+
   box.innerHTML = parts.join("");
   box.querySelectorAll("button[data-shelter]").forEach((b) => {
     b.onclick = () => {
@@ -1019,6 +1065,7 @@ function sourcesHtml() {
   <li>河川水位: 出典 広島県インフラマネジメント基盤（DoboX）／広島県「観測情報_観測所一覧」「観測情報_水位日集計」${river}（加工して作成）。1 日 1 回の集計で、リアルタイムではない。最新は<a href="${RIVER_LIVE_URL}" target="_blank" rel="noopener">広島県河川防災情報システム</a></li>
   <li>土砂災害警戒区域: 出典 広島県インフラマネジメント基盤（DoboX）／広島県 砂防課（CC BY 4.0、中・東・南・西区を加工して作成）</li>
   <li>路面電車の停留場: 国土数値情報（鉄道データ N02、国土交通省、CC BY 4.0）。停留場名の英・中・韓訳: 広島電鉄 GTFS-JP（広島県バス協会、CC0）と作者による訳</li>
+  <li>バス停・路線・始発終発: 広島電鉄 GTFS-JP（広島県バス協会、CC0。${esc(state.bus?.feed_version || "未取得")} 版の平日ダイヤ）</li>
   <li>背景地図: 地理院タイル（淡色地図）</li>
   <li>3D 表示: CesiumJS（Apache-2.0）</li>
 </ul>
@@ -1041,7 +1088,7 @@ async function main() {
   const results = await Promise.allSettled(PLATEAU.buildings.map((b) => loadTileset(b.url, "bldg")));
   state.buildings = results.filter((r) => r.status === "fulfilled").map((r) => r.value);
   state.buildingsFailed = state.buildings.length === 0;
-  await Promise.all([loadAreas("flood"), loadShelters(), loadStops(), loadLandslide(), loadRiver()]);
+  await Promise.all([loadAreas("flood"), loadShelters(), loadStops(), loadBus(), loadLandslide(), loadRiver()]);
   applyStyles();
   bootDone = true;
   updateLoading();
