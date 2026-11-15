@@ -20,6 +20,7 @@ const PREVIEW = path.join(OUT, "preview");
 
 const DOCS = {
   slides: { html: "slides.html", pdf: "plateau-slides.pdf", viewport: { width: 1280, height: 720 }, pdfOpt: { width: "1280px", height: "720px" }, jpeg: true },
+  udc: { html: "udc-slides.html", pdf: "udc-slides.pdf", viewport: { width: 1280, height: 720 }, pdfOpt: { width: "1280px", height: "720px" }, jpeg: true },
   poster: { html: "poster.html", pdf: "dobox-poster.pdf", viewport: { width: 794, height: 1123 }, pdfOpt: { format: "A4" }, jpeg: false },
 };
 

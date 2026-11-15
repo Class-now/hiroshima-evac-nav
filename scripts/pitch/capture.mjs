@@ -110,6 +110,11 @@ const SCENES = [
       document.getElementById("legend-panel").open = true;
     });
   }],
+  ...["ja-easy", "en"].map((lang) => [`bus-peace-${lang === "en" ? "en" : "ja"}`, `避難場所の近くのバス停と路線（GTFS、${lang}）`, {}, async (p, b) => {
+    await openSpot(p, b, { lang });
+    await p.waitForSelector("#result ul.bus li", { timeout: 30000 });
+    await p.evaluate(() => document.querySelector("#result ul.bus").closest("p, ul").previousElementSibling?.previousElementSibling?.scrollIntoView({ block: "start" }) || document.querySelector("#result ul.bus").scrollIntoView({ block: "center" }));
+  }]),
   ["mobile-river-ja", "スマホ 375px: 河川水位", { mobile: true, scale: 3 }, async (p, b) => {
     await p.goto(`${b}?lang=ja-easy`, { waitUntil: "domcontentloaded" });
     await waitBoot(p);
